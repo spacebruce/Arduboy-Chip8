@@ -4,11 +4,6 @@ void Chip8::ExecuteInstruction()
 {
   uint16_t Opcode = (this->ReadMemory(this->ProgramCounter) << 8) + (this->ReadMemory(this->ProgramCounter + 1));
   this->ProgramCounter += 2;
-  Serial.print("addr ");
-  Serial.print(this->ProgramCounter);
-  Serial.print(" : ");
-  Serial.print(Opcode);
-  Serial.println(" !Unknown opcode!");
 }
 
 MemoryPartition Chip8::GetMemoryPartition(const size_t Location) const
@@ -32,7 +27,7 @@ uint8_t Chip8::ReadMemory(const size_t Location) const
 #if SMALL_MEMORY
   if(Location < this->RomStart) //empty space
   {
-    return 69;
+    return 0;
   }
   if((Location >= this->RomStart) && (Location < this->RomEnd)) //Static rom space
   {
@@ -45,6 +40,24 @@ uint8_t Chip8::ReadMemory(const size_t Location) const
   }
 #else
   return this->Memory[Location];
+#endif
+}
+
+void Chip8::WriteMemory(const size_t Location, const uint8_t Value)
+{
+#if SMALL_MEMORY
+  if((Location >= this->RomEnd))
+  {
+    this->Memory[Location] = Value;
+  }
+  else
+  {
+    this->Mode = CPUMode::Error;
+    this->Error = CPUError::MemoryWrite;
+    this->ErrorData = Location;
+  }
+#else
+  this->Memory[Location] = Value;
 #endif
 }
 
@@ -73,13 +86,17 @@ void Chip8::Load(uint8_t* Rom, const size_t RomSize)
   this->Reset();
 }
 
+void Chip8::Halt()
+{
+  this->Mode = CPUMode::Stopped;
+}
 void Chip8::Reset()
 {
   Serial.println(F("Reset CPU..."));
   //bootup
   for(size_t i = 0; i < 16; ++i)
   {
-      this->Register [i] = 0;
+      this->Register[i] = 0;
       this->Stack[i] = 0;
   }
   this->TimerDelay = 0;
@@ -87,4 +104,5 @@ void Chip8::Reset()
   this->Index = 0;
   this->ProgramCounter = this->RomStart;
   this->StackPointer = 0;
+  this->Mode = CPUMode::Running;
 }
