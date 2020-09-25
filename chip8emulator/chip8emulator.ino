@@ -16,7 +16,6 @@ void setup()
   System.setFrameRate(60);
 #ifdef SERIAL_DEBUG
   Serial.begin(9600);
-
 #endif
   Chip8.Load(TestRom, TestRomSize);
 }

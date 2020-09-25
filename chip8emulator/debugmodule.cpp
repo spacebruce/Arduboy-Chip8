@@ -30,50 +30,32 @@ void DebugModule::Tick(Arduboy2* System)
 
 void DebugModule::Draw(Arduboy2* System)
 {
+  System->setCursor(64, 0);
 #if SMALL_MEMORY
-    System->print(F("SM"));
+    System->print(F("mem "));
 #endif
+  uint8_t line = 1;
   switch(this->ViewMode)
   {
     case DebugScreenView::Decimal8:
-      System->println(F("view : 8 bit"));
+      System->println(F("8 bit"));
       for(size_t i = this->Scroll; i < this->Scroll + 7; ++i)
       {
+        System->setCursor(64, line * 8); ++line;
         System->print(i);
-        switch(Emulator->GetMemoryPartition(i))
-        {
-          case MemoryPartition::RAM:
-          System->print(F(" | RAM | "));
-          break;
-          case MemoryPartition::ROM:
-          System->print(F(" | ROM | "));
-          break;
-          case MemoryPartition::Static:
-          System->print(F(" | SYS | "));
-          break;
-        }
+        System->print("|");
         System->println(Emulator->ReadMemory(i));
       }
     break;
     case DebugScreenView::Decimal16:
-      System->println(F("view : 16 bit"));
+      System->println(F("16 bit"));
       size_t pointer = floor(this->Scroll / 2) * 2;
       for(size_t i = this->Scroll; i < this->Scroll + 7; ++i)
       {
+        System->setCursor(64, line * 8); ++line;
         int16_t value = (Emulator->ReadMemory(pointer) << 8) + (Emulator->ReadMemory(pointer + 1));
         System->print(pointer);
-        switch(Emulator->GetMemoryPartition(pointer))
-        {
-          case MemoryPartition::RAM:
-          System->print(F(" | RAM | "));
-          break;
-          case MemoryPartition::ROM:
-          System->print(F(" | ROM | "));
-          break;
-          case MemoryPartition::Static:
-          System->print(F(" | SYS | "));
-          break;
-        }
+        System->print("|");
         System->println(value);
         pointer += 2;
       }
