@@ -36,10 +36,9 @@ public:
   size_t RomEnd = 0;
 //CPU/shit
   uint8_t Register[16];
+  uint16_t RegisterTemp[16];
   uint16_t Index;
   uint16_t ProgramCounter = 0;
-  uint16_t Stack[16];
-  uint16_t StackPointer = 0;
   uint16_t TimerDelay = 0;
   uint16_t TimerSound = 0;
 //Debug
@@ -56,8 +55,8 @@ public:
   Chip8(uint8_t* Rom, const size_t RomSize);
 
   void Load(uint8_t* Rom, const size_t RomSize);
-  void Reset();
-  void Draw();
-  void Tick();
-  void Halt();
+  void Reset(void);
+  void Draw(void);
+  void Tick(void);
+  void Halt(void);
 };

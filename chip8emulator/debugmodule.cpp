@@ -30,7 +30,24 @@ void DebugModule::Tick(Arduboy2* System)
 
 void DebugModule::Draw(Arduboy2* System)
 {
-  System->setCursor(64, 0);
+  ///CPU viewer
+  System->setCursor(0,32);
+  System->print("PC");  System->print(Emulator->ProgramCounter);
+  System->print("I");  System->print(Emulator->Index);
+  System->print("TD");  System->print(Emulator->TimerDelay);
+  System->print("TS");  System->print(Emulator->TimerSound);
+  System->setCursor(0,40);
+  for(uint8_t i = 0; i < 16; ++i)
+  {
+    System->print(Emulator->Register[i]);
+  }
+  System->setCursor(0,48);
+  for(uint8_t i = 0; i < 16; ++i)
+  {
+    System->print(Emulator->RegisterTemp[i]);
+  }
+  ///Memory viewer
+  System->setCursor(70, 0);
 #if SMALL_MEMORY
     System->print(F("mem "));
 #endif
@@ -41,7 +58,7 @@ void DebugModule::Draw(Arduboy2* System)
       System->println(F("8 bit"));
       for(size_t i = this->Scroll; i < this->Scroll + 7; ++i)
       {
-        System->setCursor(64, line * 8); ++line;
+        System->setCursor(70, line * 8); ++line;
         System->print(i);
         System->print("|");
         System->println(Emulator->ReadMemory(i));
@@ -52,7 +69,7 @@ void DebugModule::Draw(Arduboy2* System)
       size_t pointer = floor(this->Scroll / 2) * 2;
       for(size_t i = this->Scroll; i < this->Scroll + 7; ++i)
       {
-        System->setCursor(64, line * 8); ++line;
+        System->setCursor(70, line * 8); ++line;
         int16_t value = (Emulator->ReadMemory(pointer) << 8) + (Emulator->ReadMemory(pointer + 1));
         System->print(pointer);
         System->print("|");
