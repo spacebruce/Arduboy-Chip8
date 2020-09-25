@@ -25,8 +25,9 @@ void loop()
   if (!(System.nextFrame()))
     return;
   System.pollButtons();
-  
-  //Chip8.Tick();
+
+  if(System.justPressed(A_BUTTON))
+    Chip8.Tick();
   //Chip8.Draw();
   Debug.Tick(&System);
   Debug.Draw(&System);
