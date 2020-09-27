@@ -15,8 +15,8 @@ enum class CPUMode : uint8_t
 enum class CPUError : uint8_t
 {
   None,
-  MemoryWrite,
-  MemoryRead,
+  ExternalWrite,
+  ExternalRead,
   UnknownOpcode,
   StackOverflow,
   StackUnderflow,

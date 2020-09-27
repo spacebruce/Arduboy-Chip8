@@ -138,12 +138,12 @@ void DebugModule::Draw(Arduboy2 & System)
       System.print(F("ERR - "));
       switch(Emulator->ErrorType)
       {
-        case CPUError::MemoryWrite:
-          System.print(F("MEMWR : "));
+        case CPUError::ExternalWrite:
+          System.print(F("EXTWR : "));
           System.print(Emulator->ErrorData);
         break;
-        case CPUError::MemoryRead:
-          System.print(F("MEMRE : "));
+        case CPUError::ExternalRead:
+          System.print(F("EXTRE : "));
           System.print(Emulator->ErrorData);
         break;
         case CPUError::UnknownOpcode:
