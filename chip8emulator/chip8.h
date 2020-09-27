@@ -2,8 +2,10 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <arduino.h>
+#include <Arduboy2.h>
 #include <avr/pgmspace.h>
 #include "config.h"
+#include "font.h"
 
 enum class CPUMode : uint8_t
 {
@@ -11,7 +13,7 @@ enum class CPUMode : uint8_t
 };
 enum class CPUError : uint8_t
 {
-  OK, MemoryWrite, MemoryRead,
+  None, MemoryWrite, MemoryRead, UnknownOpcode,
 };
 enum class MemoryPartition : uint8_t
 {
@@ -34,21 +36,25 @@ public:
   size_t RomSize;
   size_t RomStart = 0x200;
   size_t RomEnd = 0;
+  size_t StackStart = 0x52;
+  size_t StackSize = 0xF;
 //CPU/shit
   uint8_t Register[16];
   uint16_t RegisterTemp[16];
   uint16_t Index;
+  uint16_t StackPointer = StackStart;
+  uint8_t Stack[0xF];
   uint16_t ProgramCounter = 0;
   uint16_t TimerDelay = 0;
   uint16_t TimerSound = 0;
 //Debug
   CPUMode Mode = CPUMode::Startup;
-  CPUError Error = CPUError::OK;
+  CPUError Error = CPUError::None;
   uint16_t ErrorData = 0;
 //things
   MemoryPartition GetMemoryPartition(const size_t Location) const;
-  void ExecuteInstruction();
-  uint8_t ReadMemory(const size_t Location) const;
+  void ExecuteInstruction(Arduboy2* System);
+  uint8_t ReadMemory(const size_t Location);
   void WriteMemory(const size_t Location, const uint8_t Value);
 public:
   Chip8() = default;
@@ -56,7 +62,6 @@ public:
 
   void Load(uint8_t* Rom, const size_t RomSize);
   void Reset(void);
-  void Draw(void);
-  void Tick(void);
+  void Tick(Arduboy2* System);
   void Halt(void);
 };

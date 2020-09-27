@@ -13,6 +13,7 @@ DebugModule Debug = DebugModule(&Chip8);
 void setup()
 {
   System.begin();
+  System.clear();
   System.setFrameRate(60);
 #ifdef SERIAL_DEBUG
   Serial.begin(9600);
@@ -27,11 +28,11 @@ void loop()
   System.pollButtons();
 
   if(System.justPressed(A_BUTTON))
-    Chip8.Tick();
-  //Chip8.Draw();
+    Chip8.Tick(&System);
+  if(System.pressed(B_BUTTON))
+    Chip8.Tick(&System);
+
   Debug.Tick(&System);
   Debug.Draw(&System);
-
   System.display();
-  System.clear();
 }

@@ -1,14 +1,15 @@
 #include "chip8.h"
 
-void Chip8::ExecuteInstruction()
+void Chip8::ExecuteInstruction(Arduboy2* System)
 {
   uint8_t High = this->ReadMemory(this->ProgramCounter);
   uint8_t Low = this->ReadMemory(this->ProgramCounter + 1);
-  uint16_t Opcode = (High << 8) + Low;
+  uint16_t Opcode = (High << 8) | Low;
   this->ProgramCounter += 2;
 
-  uint8_t target, source;
   uint16_t location;
+  uint8_t target = High & 0xF;
+  uint8_t source = (Low & 0xF0) >> 4;
   switch(High & 0xF0)
   {
     case 0x00:  //0x00XX - misc routines
@@ -17,8 +18,11 @@ void Chip8::ExecuteInstruction()
         case 0xCF:  //Scroll down
         break;
         case 0xE0:  //CLS - Clear screen
+          System->clear();
         break;
         case 0xEE:  //RTS - return from sub
+          this->ProgramCounter = (this->ReadMemory(this->StackPointer - 1) << 8) + this->ReadMemory(this->StackPointer - 2);
+          this->StackPointer -= 2;
         break;
         case 0xFB:  //SCRR - Scroll right
         break;
@@ -27,86 +31,133 @@ void Chip8::ExecuteInstruction()
         case 0xFD:  //EXIT - End program
           this->Halt();
         break;
-        case 0xFE:  //EXTD - Disable extended mode
-        break;
-        case 0xFF:  //EXTE - Enabled extended mode
-        break;
       }
   break;
   case 0x10:  //JUMP to xNNN
     this->ProgramCounter = Opcode & 0x0FFF;
   break;
   case 0x20:  //CALL
-    //
+    this->WriteMemory(this->StackPointer + 0, static_cast<uint8_t>(this->ProgramCounter & 0xFF));
+    this->WriteMemory(this->StackPointer + 1, static_cast<uint8_t>((this->ProgramCounter >> 8) & 00FF));
+    this->StackPointer += 2;
+    this->ProgramCounter = Opcode & 0x0FFF;
   break;
   case 0x30:  //SKE - Skip if selected register = low byte
-    target = High & 0xF;
     if(this->Register[target] == Low)
     {
       this->ProgramCounter += 2;
     }
   break;
   case 0x40:  //SKNE - Skip if reg != low byte
-    target = High & 0xF;
     if(this->Register[target] != Low)
     {
       this->ProgramCounter += 2;
     }
   break;
   case 0x50:  //??? - Skip if source register == selected register
-    source = High & 0xF;
-    target = (Low & 0xF0) >> 4;
     if(this->Register[source] == this->Register[target])
       this->ProgramCounter += 2;
   break;
   case 0x60: //LOAD - store constant into register
-    target = High & 0xF;
     this->Register[target] = Low;
   break;
   case 0x70:  //ADD - Add value to register
-    target = High & 0xF;
     this->Register[target] += Low;
   break;
   case 0x80:  //Numerical operations and stuff
     switch(Low & 0x0F)
     {
       case 0x0: //LOAD
+        this->Register[target] = this->Register[source];
       break;
       case 0x1: //OR
+        this->Register[target] = (this->Register[target] | this->Register[source]);
       break;
       case 0x2: //AND
+        this->Register[target] = (this->Register[target] & this->Register[source]);
       break;
       case 0x3: //XOR
+        this->Register[target] = (this->Register[target] ^ this->Register[source]);
       break;
       case 0x4: //ADD
+        this->Register[target] = (this->Register[target] + this->Register[source]);
       break;
-      case 0x5: //SUB
+      case 0x5: //SUB - Subtract source from target, if borrow store 0 in reg 0xF
+        if(this->Register[target] > this->Register[source])
+        {
+          this->Register[0xF] = 1;
+          this->Register[target] -= this->Register[source];
+        }
+        else
+        {
+          this->Register[0xF] = 0;
+          this->Register[target] = 256 + (this->Register[target] - this->Register[source]);
+        }
       break;
       case 0x6: //SHR - Shift bits right. Bit 0 goes into reg 0xF
+        this->Register[0xF] = (this->Register[source] & 0x1) ? 1 : 0;
+        this->Register[source] = this->Register[source] >> 1;
       break;
       case 0x7: //SUBN  - Subtract source from target, is borrow store 1 in reg 0xF
+      if(this->Register[target] > this->Register[source])
+      {
+        this->Register[0xF] = 0;
+        this->Register[target] -= this->Register[source];
+      }
+      else
+      {
+        this->Register[0xF] = 1;
+        this->Register[target] = 256 + (this->Register[target] - this->Register[source]);
+      }
       break;
       case 0xE: //SHL - Shift bits left. Bit 7 goes into reg 0xF
+        this->Register[0xF] = (this->Register[source] & 0x80) ? 1 : 0;
+        this->Register[source] = this->Register[source] << 1;
       break;
       default:
       break;
     }
   break;
-  case 0x90:  //SKNE - Skip if source reg == target reg
-    //????
+  case 0x90:  //SKNE - Skip if source reg != target reg
+    if(this->Register[source] != this->Register[target])
+    {
+      this->ProgramCounter += 2;
+    }
   break;
-  case 0xA0:  //LOAD - load index reg with 0x0FFF
+  case 0xA0:  //LOAD - load index reg with data
     this->Index = Opcode & 0x0FFF;
   break;
   case 0xB0:  //JUMP + i - PC goes moved to Index + operand const
     this->ProgramCounter = (Opcode & 0x0FFF) + this->Index;
   break;
   case 0xC0:  //RAND - generated random number &'d with low byte, store in selected register
-    target = (High & 0xF);
     this->Register[target] = random(255) & Low;
   break;
-  case 0xD0:  //DRAW (x,y, )
-    //not today, satan
+  case 0xD0:
+    /*  DXXX
+      D - sprite draw
+      X - X position
+      X - Y position
+      X - Sprite height
+    */
+    uint8_t x = target; //this->Register[High & 0x0F];
+    uint8_t y = source; //this->Register[(Low & 0xF0) >> 4];
+    uint8_t height = (Low & 0x0F);
+    this->Register[0xF] = 0;  //Collision register
+    for(uint8_t drawY = 0; drawY < height; ++drawY)
+    {
+      uint8_t sprite = ReadMemory(this->Index + drawY);
+      for(uint8_t drawX = 0; drawX < 8; ++drawX)
+      {
+        if(sprite & (0x80 >> drawX) != 0) //If current pixel in sprite is on
+        {
+          bool lit = System->getPixel(x + drawX, y + drawY);
+          if (lit) //If surface pixel is on
+            this->Register[0xF] = true; //Collision on
+          System->drawPixel((x + drawX) % 64, (y + drawY) % 32, !lit);  //invert drawn pixel
+        }
+      }
+    }
   break;
   case 0xE0:  //Input stuff
     switch(Low)
@@ -123,28 +174,22 @@ void Chip8::ExecuteInstruction()
     switch(Low)
     {
       case 0x07: //Load delay - timer -> register
-        target = (High & 0xF);
         this->Register[target] = this->TimerDelay;
       break;
       case 0x0A:  //KEYD - Pause until key pressed
-        target = (High & 0xF);
         //to do
         this->Register[target] = 0;
       break;
       case 0x15:  //Store delay - register -> timer
-        target = (High & 0xF);
         this->TimerDelay = this->Register[target];
       break;
       case 0x18:  //Store sound - register -> timer
-        target = (High & 0xF);
         this->TimerSound = this->Register[target];
       break;
       case 0x1E:  //Add I
-        source = (High & 0xF);
         this->Index += this->Register[source];
       break;
-      case 0x29:  //Load sprite
-        source = (High & 0xF);
+      case 0x29:  //Load sprite index
         this->Index = this->Register[source] * 5;
       break;
       case 0x33:  //BCD
@@ -165,14 +210,12 @@ void Chip8::ExecuteInstruction()
         }
       break;
       case 0x75:  //SRPL - Move N registers to temp
-        target = High & 0xF;
         for(uint8_t i = 0; i <= target; ++i)
         {
           this->RegisterTemp[i] = this->Register[i];
         }
       break;
       case 0x85:  //LRPL - Move N temp registers to main
-        target = High & 0xF;
         for(uint8_t i = 0; i <= target; ++i)
         {
           this->Register[i] = this->RegisterTemp[i];
@@ -201,12 +244,23 @@ MemoryPartition Chip8::GetMemoryPartition(const size_t Location) const
   }
 }
 
-uint8_t Chip8::ReadMemory(const size_t Location) const
+uint8_t Chip8::ReadMemory(const size_t Location)
 {
 #if SMALL_MEMORY
   if(Location < this->RomStart) //empty space
   {
-    return 0;
+    if(Location < FontDataSize) //font space
+    {
+      return static_cast<uint8_t>(pgm_read_byte(&FontData[Location]));
+    }
+    else if ((Location >= StackStart) && (Location <= StackStart + StackSize))
+    {
+      return this->Stack[Location - StackStart];
+    }
+    else
+    {
+      return 0;
+    }
   }
   if((Location >= this->RomStart) && (Location < this->RomEnd)) //Static rom space
   {
@@ -215,6 +269,12 @@ uint8_t Chip8::ReadMemory(const size_t Location) const
   }
   else  //RAM
   {
+    if(Location > 4096)
+    {
+      this->Mode = CPUMode::Error;
+      this->Error = CPUError::MemoryRead;
+      this->ErrorData = Location;
+    }
     return this->Memory[Location - this->RomEnd];
   }
 #else
@@ -225,9 +285,14 @@ uint8_t Chip8::ReadMemory(const size_t Location) const
 void Chip8::WriteMemory(const size_t Location, const uint8_t Value)
 {
 #if SMALL_MEMORY
+  bool valid = true;
   if((Location >= this->RomEnd))
   {
     this->Memory[Location] = Value;
+  }
+  else if ((Location >= StackStart) && (Location <= StackStart + StackSize))
+  {
+    return Stack[Location - StackStart] = Value;
   }
   else
   {
@@ -256,15 +321,12 @@ void Chip8::Load(uint8_t* Rom, const size_t RomSize)
   this->Reset();
 }
 
-void Chip8::Tick(void)
+void Chip8::Tick(Arduboy2* System)
 {
   //for(auto i = 0; i < 50; ++i)
-    ExecuteInstruction();
+    ExecuteInstruction(System);
 }
-void Chip8::Draw(void)
-{
 
-}
 void Chip8::Halt(void)
 {
   this->Mode = CPUMode::Stopped;
@@ -282,5 +344,6 @@ void Chip8::Reset(void)
   this->TimerSound = 0;
   this->Index = 0;
   this->ProgramCounter = this->RomStart;
+  this->StackPointer = this->StackStart;
   this->Mode = CPUMode::Running;
 }
