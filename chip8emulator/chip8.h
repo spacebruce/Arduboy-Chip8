@@ -32,7 +32,7 @@ public:
 //RAM
   uint8_t Memory[MemorySize];
 //ROM
-  uint8_t* Rom;
+  const uint8_t * Rom;
   size_t RomSize;
   size_t RomStart = 0x200;
   size_t RomEnd = 0;
@@ -58,9 +58,9 @@ public:
   void WriteMemory(const size_t Location, const uint8_t Value);
 public:
   Chip8() = default;
-  Chip8(uint8_t* Rom, const size_t RomSize);
+  Chip8(const uint8_t * Rom, const size_t RomSize);
 
-  void Load(uint8_t* Rom, const size_t RomSize);
+  void Load(const uint8_t * Rom, const size_t RomSize);
   void Reset(void);
   void Tick(Arduboy2* System, uint8_t Repeat = 50);
   void Halt(void);

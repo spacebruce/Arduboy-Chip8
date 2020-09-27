@@ -307,12 +307,12 @@ void Chip8::WriteMemory(const size_t Location, const uint8_t Value)
 }
 
 
-Chip8::Chip8(uint8_t* Rom, const size_t RomSize)
+Chip8::Chip8(const uint8_t * Rom, const size_t RomSize)
 {
   this->Load(Rom, RomSize);
 }
 
-void Chip8::Load(uint8_t* Rom, const size_t RomSize)
+void Chip8::Load(const uint8_t * Rom, const size_t RomSize)
 {
   //Configure rom
   this->Rom = Rom;
