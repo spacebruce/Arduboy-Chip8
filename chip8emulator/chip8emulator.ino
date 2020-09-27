@@ -18,7 +18,7 @@ void setup()
 #ifdef SERIAL_DEBUG
   Serial.begin(9600);
 #endif
-  Chip8.Load(TestRom, TestRomSize);
+  Chip8.Load(TestRom);
 }
 
 void loop()
