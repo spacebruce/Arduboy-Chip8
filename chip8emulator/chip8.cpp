@@ -119,7 +119,7 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
     this->Index = Opcode & 0x0FFF;
   break;
   case 0xB0:  //JUMP + i - PC goes moved to Index + operand const
-    this->ProgramCounter = (ReadMemory(this->Register[0]) << 8) + (ReadMemory(this->Register[0]+1)) + Opcode & 0x0FFF;
+    this->ProgramCounter = (this->ReadMemory(this->Register[0]) << 8) + (this->ReadMemory(this->Register[0]+1)) + Opcode & 0x0FFF;
   break;
   case 0xC0:  //RAND - generated random number &'d with low byte, store in selected register
     this->Register[byteX] = random(255) & Low;
@@ -137,7 +137,7 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
     this->Register[0xF] = 0;  //Collision register
     for(uint8_t drawY = 0; drawY < height; ++drawY)
     {
-      uint8_t sprite = ReadMemory(this->Index + drawY);
+      uint8_t sprite = this->ReadMemory(this->Index + drawY);
       for(uint8_t drawX = 0; drawX < 8; ++drawX)
       {
         if((sprite >> drawX) & 0x1) //If current pixel in sprite is on
@@ -188,17 +188,15 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
         //not today, satan
       break;
       case 0x55:  //STORE I - Store n registers into memory[index]
-        location = this->Index;
-        for(uint8_t i = 0; i <= High & 0xF; ++i)
+        for(uint8_t i = 0; i <= byteX; ++i)
         {
-          this->WriteMemory(byteX + i, this->Register[i]);
+          this->WriteMemory(this->Index + i, this->Register[i]);
         }
       break;
       case 0x65:  //LOAD I - Load n number of registers from memory[index]
-        location = this->Index;
-        for(uint8_t i = 0; i <= High & 0xF; ++i)
+        for(uint8_t i = 0; i <= byteX; ++i)
         {
-          this->Register[i] = this->ReadMemory(byteX + i);
+          this->Register[i] = this->ReadMemory(this->Index + i);
         }
       break;
       case 0x75:  //SRPL - Move N registers to temp
