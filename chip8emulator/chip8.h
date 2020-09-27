@@ -36,7 +36,7 @@ public:
   size_t RomSize;
   size_t RomStart = 0x200;
   size_t RomEnd = 0;
-  static constexpr size_t StackStart = 0x100;
+  static constexpr size_t StackStart = 0x0;
   static constexpr size_t StackSize = 0x1F;
 //CPU/shit
   uint8_t Register[16];
@@ -58,6 +58,8 @@ public:
   void WriteMemory(const size_t Location, const uint8_t Value);
   void PushWord(uint16_t Word);
   uint16_t PullWord();
+  uint8_t ReadStack();
+  void WriteStack(const uint8_t Value);
 
 public:
   Chip8() = default;

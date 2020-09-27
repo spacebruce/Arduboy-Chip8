@@ -58,7 +58,7 @@ void DebugModule::Draw(Arduboy2 & System)
     {
       System.setCursor(70, line * 8); ++line;
       System.print(i);
-      System.print("|");
+      System.print(F("|"));
       System.println(Emulator->ReadMemory(i), HEX);
     }
   }
@@ -72,7 +72,7 @@ void DebugModule::Draw(Arduboy2 & System)
       System.setCursor(70, line * 8); ++line;
       int16_t value = (Emulator->ReadMemory(pointer) << 8) + (Emulator->ReadMemory(pointer + 1));
       System.print(pointer);
-      System.print("|");
+      System.print(F("|"));
       System.println(value, HEX);
       pointer += 2;
     }
@@ -89,15 +89,15 @@ void DebugModule::Draw(Arduboy2 & System)
     System.print("x");
     System.print(Opcode, HEX);
     System.setCursor(65,0);
-    System.print("DEBUG CPU");
+    System.print(F("DEBUG CPU"));
     System.setCursor(65,8);
-    System.print("PC:");  System.print(this->CurrentOpcode);
+    System.print(F("PC:"));  System.print(Emulator->ProgramCounter);
     System.setCursor(65,16);
-    System.print("I :");  System.print(Emulator->Index);
+    System.print(F("I :"));  System.print(Emulator->Index);
     System.setCursor(80,24);
-    System.print("TD:");  System.print(Emulator->TimerDelay);
+    System.print(F("TD:"));  System.print(Emulator->TimerDelay);
     System.setCursor(80,32);
-    System.print("TS:");  System.print(Emulator->TimerSound);
+    System.print(F("TS:"));  System.print(Emulator->TimerSound);
     System.setCursor(0,40);
     for(uint8_t i = 0; i < 8; ++i)
     {
@@ -105,6 +105,21 @@ void DebugModule::Draw(Arduboy2 & System)
       System.print(Emulator->Register[i], HEX);
       System.setCursor(i*16, 48);
       System.print(Emulator->Register[i+8], HEX);
+    }
+  }
+  if(this->ViewMode == DebugScreenView::Stack)
+  {
+    System.setCursor(65,0);
+    System.print(F("STACK VIEW"));
+    System.setCursor(65,8);
+    System.print(F("SP"));
+    System.print(Emulator->StackPointer);
+    for(uint8_t i = 0; i < 8; ++i)  //16 stack entries...
+    {
+      System.setCursor(i*16, 40);
+      System.print(Emulator->Stack[i], HEX);
+      System.setCursor(i*16, 48);
+      System.print(Emulator->Stack[i+8], HEX);
     }
   }
 
