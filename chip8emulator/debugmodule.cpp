@@ -48,7 +48,7 @@ void DebugModule::Tick(Arduboy2 & System)
     }
     if(System.justPressed(DOWN_BUTTON))
     {
-      this->InputSelected = (this->InputSelected + 1) % 0x0F;
+      this->InputSelected = (this->InputSelected + 1) % 0x10;
     }
   }
 }

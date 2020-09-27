@@ -68,7 +68,7 @@ public:
   void ExecuteInstruction(Arduboy2 & System);
   uint8_t ReadMemory(const size_t Location);
   void WriteMemory(const size_t Location, const uint8_t Value);
-  void PushWord(uint16_t Word);
+  void PushWord(const uint16_t Word);
   uint16_t PullWord();
   void Error(CPUError ErrorType, uint16_t ErrorData = 0);
 

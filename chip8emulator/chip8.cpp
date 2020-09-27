@@ -294,7 +294,7 @@ void Chip8::WriteMemory(const size_t Location, const uint8_t Value)
 #endif
 }
 
-void Chip8::PushWord(uint16_t Word)
+void Chip8::PushWord(const uint16_t Word)
 {
   if(this->StackPointer >= this->StackSize)
   {
