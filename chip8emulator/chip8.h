@@ -36,14 +36,14 @@ public:
   size_t RomSize;
   size_t RomStart = 0x200;
   size_t RomEnd = 0;
-  size_t StackStart = 0x100;
-  size_t StackSize = 0xF;
+  static constexpr size_t StackStart = 0x100;
+  static constexpr size_t StackSize = 0x1F;
 //CPU/shit
   uint8_t Register[16];
   uint16_t RegisterTemp[16];
   uint16_t Index;
   uint16_t StackPointer = StackStart;
-  uint8_t Stack[64];
+  uint8_t Stack[StackSize];
   uint16_t ProgramCounter = 0;
   uint16_t TimerDelay = 0;
   uint16_t TimerSound = 0;
