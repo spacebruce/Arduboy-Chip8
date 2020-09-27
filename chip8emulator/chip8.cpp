@@ -293,7 +293,7 @@ void Chip8::WriteMemory(const size_t Location, const uint8_t Value)
   bool valid = true;
   if((Location >= this->RomEnd))
   {
-    this->Memory[Location] = Value;
+    this->Memory[Location - this->RomEnd] = Value;
   }
   else
   {
