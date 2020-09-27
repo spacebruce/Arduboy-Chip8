@@ -115,6 +115,7 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
     this->Register[byteX] = random(255) & Low;
   return;
   case 0xD0:
+  {
     /*  DXXX
       D - sprite draw
       X - X position register
@@ -139,6 +140,7 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
         }
       }
     }
+  }
   return;
   case 0xE0:  //Input stuff
     switch(Low)
