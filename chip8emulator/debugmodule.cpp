@@ -5,6 +5,12 @@ DebugModule::DebugModule(Chip8 & Emulator)
   this->Emulator = &Emulator;
 }
 
+void DebugModule::PreTick()
+{
+  size_t Address = Emulator->ProgramCounter;
+  CurrentOpcode = (Emulator->ReadMemory(Address) << 8) + Emulator->ReadMemory(Address + 1);
+}
+
 void DebugModule::Tick(Arduboy2 & System)
 {
 //Mode
@@ -74,8 +80,8 @@ void DebugModule::Draw(Arduboy2 & System)
   if(this->ViewMode == DebugScreenView::Processor)
   {
     System.setCursor(0,32);
-    uint8_t High = Emulator->ReadMemory(Emulator->ProgramCounter - 2);
-    uint8_t Low = Emulator->ReadMemory(Emulator->ProgramCounter - 1);
+    uint8_t High = (CurrentOpcode >> 8);
+    uint8_t Low = (CurrentOpcode & 0x00FF);
     uint16_t Opcode = (High << 8) | Low;
     System.print(High, HEX);
     System.print(",");
@@ -85,7 +91,7 @@ void DebugModule::Draw(Arduboy2 & System)
     System.setCursor(65,0);
     System.print("DEBUG CPU");
     System.setCursor(65,8);
-    System.print("PC:");  System.print(Emulator->ProgramCounter);
+    System.print("PC:");  System.print(this->CurrentOpcode);
     System.setCursor(65,16);
     System.print("I :");  System.print(Emulator->Index);
     System.setCursor(80,24);

@@ -27,6 +27,8 @@ void loop()
     return;
   System.pollButtons();
 
+  Debug.PreTick();
+  
   if(System.justPressed(A_BUTTON))
     Chip8.Tick(System, 1);
   if(System.pressed(B_BUTTON))
