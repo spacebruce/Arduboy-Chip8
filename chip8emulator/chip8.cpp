@@ -164,7 +164,14 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
         this->DelayTimer = this->Register[byteX];
       return;
       case 0x18:  //Store sound - register -> timer
+      {
         this->SoundTimer = this->Register[byteX];
+
+        if(this->SoundTimer > 0)
+          BeepPin1::tone(BeepPin1::freq(Chip8::SoundFrequency));
+        else
+          BeepPin1::noTone();
+      }
       return;
       case 0x1E:  //Add I
         this->Index += this->Register[byteX];
@@ -375,6 +382,9 @@ void Chip8::UpdateSoundTimer()
 {
   if(this->SoundTimer > 0)
     --this->SoundTimer;
+
+  if(this->SoundTimer == 0)
+    BeepPin1::noTone();
 }
 
 void Chip8::Halt(void)

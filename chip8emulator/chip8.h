@@ -41,6 +41,9 @@ public:
 #else
   static constexpr size_t MemorySize = 4096;
 #endif
+
+  static constexpr uint16_t SoundFrequency = 440;
+
 //RAM
   uint8_t Memory[MemorySize];
 //ROM

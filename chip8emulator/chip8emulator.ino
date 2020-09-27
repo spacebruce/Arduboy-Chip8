@@ -15,6 +15,9 @@ void setup()
   System.begin();
   System.clear();
   System.setFrameRate(60);
+
+  BeepPin1::begin();
+
 #ifdef SERIAL_DEBUG
   Serial.begin(9600);
 #endif
