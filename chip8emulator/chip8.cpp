@@ -233,6 +233,8 @@ uint8_t Chip8::ReadMemory(const size_t Location)
       return static_cast<uint8_t>(pgm_read_byte(&FontData[Location]));
     }
 
+    this->Error(CPUError::SystemRead, Location);
+
     return 0;
   }
 
@@ -264,6 +266,13 @@ uint8_t Chip8::ReadMemory(const size_t Location)
 void Chip8::WriteMemory(const size_t Location, const uint8_t Value)
 {
 #if SMALL_MEMORY
+
+  if(Location < this->RomStart)
+  {
+    this->Error(CPUError::SystemWrite, Location);
+    return;
+  }
+
   if(Location < this->RomEnd)
   {
     this->Error(CPUError::RomWrite, Location);
