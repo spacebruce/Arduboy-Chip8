@@ -220,9 +220,7 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
 
   if(unknown)
   {
-    this->Mode = CPUMode::Error;
-    this->Error = CPUError::UnknownOpcode;
-    this->ErrorData = Opcode;
+    this->Error(CPUError::UnknownOpcode, Opcode);
   }
 }
 
@@ -265,9 +263,7 @@ uint8_t Chip8::ReadMemory(const size_t Location)
   {
     if(Location > 4096)
     {
-      this->Mode = CPUMode::Error;
-      this->Error = CPUError::MemoryRead;
-      this->ErrorData = Location;
+      this->Error(CPUError::MemoryRead, Location);
     }
     return this->Memory[Location - this->RomEnd];
   }
@@ -279,16 +275,13 @@ uint8_t Chip8::ReadMemory(const size_t Location)
 void Chip8::WriteMemory(const size_t Location, const uint8_t Value)
 {
 #if SMALL_MEMORY
-  bool valid = true;
   if((Location >= this->RomEnd))
   {
     this->Memory[Location - this->RomEnd] = Value;
   }
   else
   {
-    this->Mode = CPUMode::Error;
-    this->Error = CPUError::MemoryWrite;
-    this->ErrorData = Location;
+    this->Error(CPUError::MemoryWrite, Location);
   }
 #else
   this->Memory[Location] = Value;
@@ -305,6 +298,13 @@ uint16_t Chip8::PullWord()
 {
   --this->StackPointer;
   return this->Stack[this->StackPointer];
+}
+
+void Chip8::Error(CPUError ErrorType, uint16_t ErrorData)
+{
+  this->Mode = CPUMode::Error;
+  this->ErrorType = ErrorType;
+  this->ErrorData = ErrorData;
 }
 
 Chip8::Chip8(const uint8_t * Rom, const size_t RomSize)

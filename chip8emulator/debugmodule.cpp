@@ -136,7 +136,7 @@ void DebugModule::Draw(Arduboy2 & System)
     if(Emulator->Mode == CPUMode::Error)
     {
       System.print(F("ERR - "));
-      switch(Emulator->Error)
+      switch(Emulator->ErrorType)
       {
         case CPUError::MemoryWrite:
           System.print(F("MEMWR : "));

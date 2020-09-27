@@ -11,10 +11,15 @@ enum class CPUMode : uint8_t
 {
   Startup, Running, Stopped, Error
 };
+
 enum class CPUError : uint8_t
 {
-  None, MemoryWrite, MemoryRead, UnknownOpcode,
+  None,
+  MemoryWrite,
+  MemoryRead,
+  UnknownOpcode,
 };
+
 enum class MemoryPartition : uint8_t
 {
   Void, Static, ROM, RAM,
@@ -49,7 +54,7 @@ public:
   uint16_t TimerSound = 0;
 //Debug
   CPUMode Mode = CPUMode::Startup;
-  CPUError Error = CPUError::None;
+  CPUError ErrorType = CPUError::None;
   uint16_t ErrorData = 0;
 //things
   MemoryPartition GetMemoryPartition(const size_t Location) const;
@@ -58,6 +63,7 @@ public:
   void WriteMemory(const size_t Location, const uint8_t Value);
   void PushWord(uint16_t Word);
   uint16_t PullWord();
+  void Error(CPUError ErrorType, uint16_t ErrorData = 0);
 
 public:
   Chip8() = default;
