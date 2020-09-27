@@ -157,6 +157,14 @@ void DebugModule::Draw(Arduboy2 & System)
           System.print(F("UNDER"));
         break;
           // Pepsi cola
+        case CPUError::AbsentWrite:
+          System.print(F("ABSWR : "));
+          System.print(Emulator->ErrorData);
+        break;
+        case CPUError::AbsentRead:
+          System.print(F("ABSRE : "));
+          System.print(Emulator->ErrorData);
+        break;
       }
     }
   }

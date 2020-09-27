@@ -242,7 +242,11 @@ uint8_t Chip8::ReadMemory(const size_t Location)
   }
   else  //RAM
   {
-    if(Location > 4096)
+    if((Location - this->RomStart) > MemorySize)
+    {
+      this->Error(CPUError::AbsentRead, Location);
+    }
+    else if(Location > 4096)
     {
       this->Error(CPUError::ExternalRead, Location);
     }
@@ -262,7 +266,17 @@ void Chip8::WriteMemory(const size_t Location, const uint8_t Value)
   }
   else
   {
-    this->Error(CPUError::ExternalWrite, Location);
+    if(Location > 4096)
+    {
+      this->Error(CPUError::ExternalWrite, Location);
+      return;
+    }
+
+    if((Location - this->RomStart) > MemorySize)
+    {
+      this->Error(CPUError::AbsentWrite, Location);
+      return;
+    }
   }
 #else
   this->Memory[Location] = Value;
