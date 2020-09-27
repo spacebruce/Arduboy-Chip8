@@ -136,19 +136,46 @@ void DebugModule::Draw(Arduboy2 & System)
     if(Emulator->Mode == CPUMode::Error)
     {
       System.print(F("ERR - "));
-      switch(Emulator->Error)
+      switch(Emulator->ErrorType)
       {
-        case CPUError::MemoryWrite:
-          System.print(F("MEMWR : "));
+        case CPUError::ExternalWrite:
+          System.print(F("EXTWR : "));
           System.print(Emulator->ErrorData);
         break;
-        case CPUError::MemoryRead:
-          System.print(F("MEMRE : "));
+        case CPUError::ExternalRead:
+          System.print(F("EXTRE : "));
           System.print(Emulator->ErrorData);
         break;
         case CPUError::UnknownOpcode:
           System.print(F("UNKNW : "));
           System.print(Emulator->ErrorData, HEX);
+        break;
+        case CPUError::StackOverflow:
+          System.print(F("OVER"));
+        break;
+        case CPUError::StackUnderflow:
+          System.print(F("UNDER"));
+        break;
+          // Pepsi cola
+        case CPUError::AbsentWrite:
+          System.print(F("ABSWR : "));
+          System.print(Emulator->ErrorData);
+        break;
+        case CPUError::AbsentRead:
+          System.print(F("ABSRE : "));
+          System.print(Emulator->ErrorData);
+        break;
+        case CPUError::SystemWrite:
+          System.print(F("SYSWR : "));
+          System.print(Emulator->ErrorData);
+        break;
+        case CPUError::SystemRead:
+          System.print(F("SYSRE : "));
+          System.print(Emulator->ErrorData);
+        break;
+        case CPUError::RomWrite:
+          System.print(F("ROMWR : "));
+          System.print(Emulator->ErrorData);
         break;
       }
     }
