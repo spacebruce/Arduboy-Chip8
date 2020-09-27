@@ -7,10 +7,11 @@
 
 enum class DebugScreenView : uint8_t
 {
-  Decimal8 = 0,
-  Decimal16 = 1,
-  Processor = 2,
-  Sizeof = 3,
+  Decimal8,
+  Decimal16,
+  Processor,
+  Stack,
+  Sizeof,
   End = 255,
 };
 

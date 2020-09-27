@@ -107,6 +107,18 @@ void DebugModule::Draw(Arduboy2 & System)
       System.print(Emulator->Register[i+8], HEX);
     }
   }
+  if(this->ViewMode == DebugScreenView::Stack)
+  {
+    System.setCursor(65,0);
+    System.print(F("STACK VIEW"));
+    for(uint8_t i = 0; i < 8; ++i)  //16 stack entries...
+    {
+      System.setCursor(i*16, 40);
+      System.print(Emulator->Stack[i], HEX);
+      System.setCursor(i*16, 48);
+      System.print(Emulator->Stack[i+8], HEX);
+    }
+  }
 
   if(Emulator->Mode != CPUMode::Running)
   {
