@@ -225,17 +225,16 @@ MemoryPartition Chip8::GetMemoryPartition(const size_t Location) const
 uint8_t Chip8::ReadMemory(const size_t Location)
 {
 #if SMALL_MEMORY
+  // Font Space
+  if(Location < FontDataSize) 
+  {
+    return static_cast<uint8_t>(pgm_read_byte(&FontData[Location]));
+  }
+
   // System Space
   if(Location < this->RomStart) 
   {
-    // Font Space
-    if(Location < FontDataSize) 
-    {
-      return static_cast<uint8_t>(pgm_read_byte(&FontData[Location]));
-    }
-
     this->Error(CPUError::SystemRead, Location);
-
     return 0;
   }
 
@@ -250,12 +249,13 @@ uint8_t Chip8::ReadMemory(const size_t Location)
   if((Location - this->RomEnd) > MemorySize)
   {
     this->Error(CPUError::AbsentRead, Location);
-    return;
+    return 0;
   }
 
   if(Location > 4096)
   {
     this->Error(CPUError::ExternalRead, Location);
+    return 0;
   }
 
   return this->Memory[Location - this->RomEnd];
