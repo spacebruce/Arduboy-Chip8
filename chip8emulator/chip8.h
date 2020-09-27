@@ -84,7 +84,8 @@ public:
 
   void Load(const uint8_t * Rom, const size_t RomSize);
   void Reset(void);
-  void Tick(Arduboy2 & System, uint8_t Repeat = 50);
+  void Tick(Arduboy2 & System);
+  void Tick(Arduboy2 & System, uint8_t Repeat);
   void Halt(void);
 
   template<size_t size>
