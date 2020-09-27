@@ -53,7 +53,7 @@ void DebugModule::Draw(Arduboy2 & System)
       System.setCursor(70, line * 8); ++line;
       System.print(i);
       System.print("|");
-      System.println(Emulator->ReadMemory(i));
+      System.println(Emulator->ReadMemory(i), HEX);
     }
   }
   if(this->ViewMode == DebugScreenView::Decimal16)
@@ -67,15 +67,15 @@ void DebugModule::Draw(Arduboy2 & System)
       int16_t value = (Emulator->ReadMemory(pointer) << 8) + (Emulator->ReadMemory(pointer + 1));
       System.print(pointer);
       System.print("|");
-      System.println(value);
+      System.println(value, HEX);
       pointer += 2;
     }
   }
   if(this->ViewMode == DebugScreenView::Processor)
   {
     System.setCursor(0,32);
-    uint8_t High = Emulator->ReadMemory(Emulator->ProgramCounter);
-    uint8_t Low = Emulator->ReadMemory(Emulator->ProgramCounter + 1);
+    uint8_t High = Emulator->ReadMemory(Emulator->ProgramCounter - 2);
+    uint8_t Low = Emulator->ReadMemory(Emulator->ProgramCounter - 1);
     uint16_t Opcode = (High << 8) | Low;
     System.print(High, HEX);
     System.print(",");
@@ -112,15 +112,17 @@ void DebugModule::Draw(Arduboy2 & System)
       {
         case CPUError::MemoryWrite:
           System.print(F("MEMWR : "));
+          System.print(Emulator->ErrorData);
         break;
         case CPUError::MemoryRead:
           System.print(F("MEMRE : "));
+          System.print(Emulator->ErrorData);
         break;
         case CPUError::UnknownOpcode:
           System.print(F("UNKNW : "));
+          System.print(Emulator->ErrorData, HEX);
         break;
       }
-      System.print(Emulator->ErrorData);
     }
   }
   if(Emulator->Mode == CPUMode::Stopped)
