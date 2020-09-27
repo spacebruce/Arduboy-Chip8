@@ -36,7 +36,7 @@ public:
   size_t RomSize;
   size_t RomStart = 0x200;
   size_t RomEnd = 0;
-  static constexpr size_t StackStart = 0x100;
+  static constexpr size_t StackStart = 0x0;
   static constexpr size_t StackSize = 0x1F;
 //CPU/shit
   uint8_t Register[16];
