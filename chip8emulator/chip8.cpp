@@ -242,6 +242,17 @@ MemoryPartition Chip8::GetMemoryPartition(const size_t Location) const
   }
 }
 
+void Chip8::WriteStack(const uint8_t Value)
+{
+  this->Stack[StackPointer] = Value;
+  ++this->StackPointer;
+}
+uint8_t Chip8::ReadStack()
+{
+  --this->StackPointer;
+  return this->Stack[StackPointer];
+}
+
 uint8_t Chip8::ReadMemory(const size_t Location)
 {
 #if SMALL_MEMORY
@@ -250,10 +261,6 @@ uint8_t Chip8::ReadMemory(const size_t Location)
     if(Location < FontDataSize) //font space
     {
       return static_cast<uint8_t>(pgm_read_byte(&FontData[Location]));
-    }
-    else if ((Location >= StackStart) && (Location <= StackStart + StackSize))
-    {
-      return this->Stack[Location - StackStart];
     }
     else
     {
@@ -288,10 +295,6 @@ void Chip8::WriteMemory(const size_t Location, const uint8_t Value)
   {
     this->Memory[Location] = Value;
   }
-  else if ((Location >= StackStart) && (Location <= StackStart + StackSize))
-  {
-    return Stack[Location - StackStart] = Value;
-  }
   else
   {
     this->Mode = CPUMode::Error;
@@ -305,19 +308,16 @@ void Chip8::WriteMemory(const size_t Location, const uint8_t Value)
 
 void Chip8::PushWord(uint16_t Word)
 {
-  this->WriteMemory(this->StackPointer + 0, static_cast<uint8_t>((Word >> 0) & 0xFF));
-  this->WriteMemory(this->StackPointer + 1, static_cast<uint8_t>((Word >> 8) & 0xFF));
-  this->StackPointer += 2;
+  this->WriteStack(static_cast<uint8_t>((Word >> 0) & 0xFF));
+  this->WriteStack(static_cast<uint8_t>((Word >> 8) & 0xFF));
 }
 
 uint16_t Chip8::PullWord()
 {
-  this->StackPointer -= 2;
-  const uint8_t Low = this->ReadMemory(this->StackPointer + 0);
-  const uint8_t High = this->ReadMemory(this->StackPointer + 1);
+  const uint8_t Low = this->ReadStack();
+  const uint8_t High = this->ReadStack();
   return ((High << 8) | (Low << 0));
 }
-
 
 Chip8::Chip8(const uint8_t * Rom, const size_t RomSize)
 {

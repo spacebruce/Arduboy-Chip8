@@ -58,6 +58,8 @@ public:
   void WriteMemory(const size_t Location, const uint8_t Value);
   void PushWord(uint16_t Word);
   uint16_t PullWord();
+  uint8_t ReadStack();
+  void WriteStack(const uint8_t Value);
 
 public:
   Chip8() = default;
