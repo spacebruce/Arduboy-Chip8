@@ -334,7 +334,7 @@ void Chip8::Load(const uint8_t * Rom, const size_t RomSize)
   this->Reset();
 }
 
-void Chip8::Tick(Arduboy2 & System, uint8_t Repeat = 50)
+void Chip8::Tick(Arduboy2 & System, uint8_t Repeat)
 {
   for(auto i = 0; i < Repeat; ++i)
     ExecuteInstruction(System);
