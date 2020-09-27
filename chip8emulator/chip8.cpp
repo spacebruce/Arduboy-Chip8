@@ -7,7 +7,6 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
   uint16_t Opcode = (High << 8) | Low;
   this->ProgramCounter += 2;
 
-  uint16_t location;
   uint8_t byteX = High & 0x0F;
   uint8_t byteY = (Low & 0xF0) >> 4;
   switch(High & 0xF0)
