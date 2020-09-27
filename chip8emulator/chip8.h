@@ -43,7 +43,7 @@ public:
   uint16_t RegisterTemp[16];
   uint16_t Index;
   uint16_t StackPointer = StackStart;
-  uint8_t Stack[0xF];
+  uint8_t Stack[64];
   uint16_t ProgramCounter = 0;
   uint16_t TimerDelay = 0;
   uint16_t TimerSound = 0;
