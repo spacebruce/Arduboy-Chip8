@@ -7,7 +7,6 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
   uint16_t Opcode = (High << 8) | Low;
   this->ProgramCounter += 2;
 
-  bool unknown = false; //error decoding opcode
   uint16_t location;
   uint8_t byteX = High & 0x0F;
   uint8_t byteY = (Low & 0xF0) >> 4;
@@ -17,110 +16,104 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
       switch(Low)
       {
         case 0xCF:  //Scroll down
-        break;
+        return;
         case 0xE0:  //CLS - Clear screen
           System.clear();
-        break;
+        return;
         case 0xEE:  //RTS - return from sub
           this->ProgramCounter = this->PullWord();
-        break;
+        return;
         case 0xFB:  //SCRR - Scroll right
-        break;
+        return;
         case 0xFC:  //SCRL - Scroll left
-        break;
+        return;
         case 0xFD:  //EXIT - End program
           this->Halt();
-        break;
-        default:
-          unknown = true;
-        break;
+        return;
       }
-  break;
+  return;
   case 0x10:  //JUMP to xNNN
     this->ProgramCounter = Opcode & 0x0FFF;
-  break;
+  return;
   case 0x20:  //CALL
     this->PushWord(this->ProgramCounter);
     this->ProgramCounter = Opcode & 0x0FFF;
-  break;
+  return;
   case 0x30:  //SKE - Skip if selected register = low byte
     if(this->Register[byteX] == Low)
     {
       this->ProgramCounter += 2;
     }
-  break;
+  return;
   case 0x40:  //SKNE - Skip if reg != low byte
     if(this->Register[byteX] != Low)
     {
       this->ProgramCounter += 2;
     }
-  break;
+  return;
   case 0x50:  //??? - Skip if byteY register == selected register
     if(this->Register[byteY] == this->Register[byteX])
     {
       this->ProgramCounter += 2;
     }
-  break;
+  return;
   case 0x60: //LOAD - store constant into register
     this->Register[byteX] = Low;
-  break;
+  return;
   case 0x70:  //ADD - Add value to register
     this->Register[byteX] += Low;
-  break;
+  return;
   case 0x80:  //Numerical operations and stuff
     switch(Low & 0x0F)
     {
       case 0x0: //LOAD
         this->Register[byteX] = this->Register[byteY];
-      break;
+      return;
       case 0x1: //OR
         this->Register[byteX] = (this->Register[byteX] | this->Register[byteY]);
-      break;
+      return;
       case 0x2: //AND
         this->Register[byteX] = (this->Register[byteX] & this->Register[byteY]);
-      break;
+      return;
       case 0x3: //XOR
         this->Register[byteX] = (this->Register[byteX] ^ this->Register[byteY]);
-      break;
+      return;
       case 0x4: //ADD
         this->Register[byteX] = (this->Register[byteX] + this->Register[byteY]);
-      break;
+      return;
       case 0x5: //SUB - Subtract byteY from byteX, if borrow store 0 in reg 0xF
         this->Register[0xF] = this->Register[byteX] > this->Register[byteY];
         this->Register[byteX] -= this->Register[byteY];
-      break;
+      return;
       case 0x6: //SHR - Shift bits right. Bit 0 goes into reg 0xF
         this->Register[0xF] = this->Register[byteY] & 0x1;
         this->Register[byteY] = this->Register[byteY] >> 1;
-      break;
+      return;
       case 0x7: //SUBN  - Subtract byteY from byteX, is borrow store 1 in reg 0xF
         this->Register[0xF] = this->Register[byteY] > this->Register[byteX];
         this->Register[byteX] -= this->Register[byteY];
-      break;
+      return;
       case 0xE: //SHL - Shift bits left. Bit 7 goes into reg 0xF
         this->Register[0xF] = (this->Register[byteY] >> 7) & 0x1;
         this->Register[byteY] = this->Register[byteY] << 1;
-      break;
-      default:
-        unknown = true;
-      break;
+      return;
     }
-  break;
+  return;
   case 0x90:  //SKNE - Skip if byteY reg != byteX reg
     if(this->Register[byteY] != this->Register[byteX])
     {
       this->ProgramCounter += 2;
     }
-  break;
+  return;
   case 0xA0:  //LOAD - load index reg with data
     this->Index = Opcode & 0x0FFF;
-  break;
+  return;
   case 0xB0:  //JUMP + i - PC goes moved to immediate address + V0
     this->ProgramCounter = (Opcode & 0x0FFF) + this->Register[0];
-  break;
+  return;
   case 0xC0:  //RAND - generated random number &'d with low byte, store in selected register
     this->Register[byteX] = random(255) & Low;
-  break;
+  return;
   case 0xD0:
     /*  DXXX
       D - sprite draw
@@ -146,82 +139,70 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
         }
       }
     }
-  break;
+  return;
   case 0xE0:  //Input stuff
     switch(Low)
     {
       case 0x9E:
-      break;
+      return;
       case 0xA1:
-      break;
-      default:
-        unknown = true;
-      break;
+      return;
     }
-  break;
+  return;
   case 0xF0: // IO stuff
     switch(Low)
     {
       case 0x07: //Load delay - timer -> register
         this->Register[byteX] = this->TimerDelay;
-      break;
+      return;
       case 0x0A:  //KEYD - Pause until key pressed
         //to do
         this->Register[byteX] = 0;
-      break;
+      return;
       case 0x15:  //Store delay - register -> timer
         this->TimerDelay = this->Register[byteX];
-      break;
+      return;
       case 0x18:  //Store sound - register -> timer
         this->TimerSound = this->Register[byteX];
-      break;
+      return;
       case 0x1E:  //Add I
         this->Index += this->Register[byteY];
-      break;
+      return;
       case 0x29:  //Load sprite index
         this->Index = this->Register[byteY] * 5;
-      break;
+      return;
       case 0x33:  //BCD
         //not today, satan
-      break;
+      return;
       case 0x55:  //STORE I - Store n registers into memory[index]
         for(uint8_t i = 0; i <= byteX; ++i)
         {
           this->WriteMemory(this->Index + i, this->Register[i]);
         }
-      break;
+      return;
       case 0x65:  //LOAD I - Load n number of registers from memory[index]
         for(uint8_t i = 0; i <= byteX; ++i)
         {
           this->Register[i] = this->ReadMemory(this->Index + i);
         }
-      break;
+      return;
       case 0x75:  //SRPL - Move N registers to temp
         for(uint8_t i = 0; i <= byteX; ++i)
         {
           this->RegisterTemp[i] = this->Register[i];
         }
-      break;
+      return;
       case 0x85:  //LRPL - Move N temp registers to main
         for(uint8_t i = 0; i <= byteX; ++i)
         {
           this->Register[i] = this->RegisterTemp[i];
         }
-      break;
-      default:
-        unknown = true;
-      break;
+      return;
     }
-    break;
-    default:
-      unknown = true;
-    break;
+    return;
   }
 
-  if(unknown)
-  {
-    this->Error(CPUError::UnknownOpcode, Opcode);
-  }
+  this->Error(CPUError::UnknownOpcode, Opcode);
 }
 
 MemoryPartition Chip8::GetMemoryPartition(const size_t Location) const
