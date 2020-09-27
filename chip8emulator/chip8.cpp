@@ -224,34 +224,38 @@ MemoryPartition Chip8::GetMemoryPartition(const size_t Location) const
 uint8_t Chip8::ReadMemory(const size_t Location)
 {
 #if SMALL_MEMORY
-  if(Location < this->RomStart) //empty space
+  // System Space
+  if(Location < this->RomStart) 
   {
-    if(Location < FontDataSize) //font space
+    // Font Space
+    if(Location < FontDataSize) 
     {
       return static_cast<uint8_t>(pgm_read_byte(&FontData[Location]));
     }
-    else
-    {
-      return 0;
-    }
+
+    return 0;
   }
-  if((Location >= this->RomStart) && (Location < this->RomEnd)) //Static rom space
+
+  // ROM
+  if(Location < this->RomEnd)
   {
     size_t offset = Location - this->RomStart;
     return static_cast<uint8_t>(pgm_read_byte(&(this->Rom[offset])));
   }
-  else  //RAM
+
+  // RAM
+  if((Location - this->RomEnd) > MemorySize)
   {
-    if((Location - this->RomStart) > MemorySize)
-    {
-      this->Error(CPUError::AbsentRead, Location);
-    }
-    else if(Location > 4096)
-    {
-      this->Error(CPUError::ExternalRead, Location);
-    }
-    return this->Memory[Location - this->RomEnd];
+    this->Error(CPUError::AbsentRead, Location);
+    return;
   }
+
+  if(Location > 4096)
+  {
+    this->Error(CPUError::ExternalRead, Location);
+  }
+
+  return this->Memory[Location - this->RomEnd];
 #else
   return this->Memory[Location];
 #endif
@@ -260,30 +264,25 @@ uint8_t Chip8::ReadMemory(const size_t Location)
 void Chip8::WriteMemory(const size_t Location, const uint8_t Value)
 {
 #if SMALL_MEMORY
-  if((Location >= this->RomEnd))
+  if(Location < this->RomEnd)
   {
-    this->Memory[Location - this->RomEnd] = Value;
+    this->Error(CPUError::RomWrite, Location);
+    return;
   }
-  else
+
+  if(Location > 4096)
   {
-    if(Location < this->RomEnd)
-    {
-      this->Error(CPUError::RomWrite, Location);
-      return;
-    }
-
-    if(Location > 4096)
-    {
-      this->Error(CPUError::ExternalWrite, Location);
-      return;
-    }
-
-    if((Location - this->RomStart) > MemorySize)
-    {
-      this->Error(CPUError::AbsentWrite, Location);
-      return;
-    }
+    this->Error(CPUError::ExternalWrite, Location);
+    return;
   }
+
+  if((Location - this->RomEnd) > MemorySize)
+  {
+    this->Error(CPUError::AbsentWrite, Location);
+    return;
+  }
+
+  this->Memory[Location - this->RomEnd] = Value;
 #else
   this->Memory[Location] = Value;
 #endif
