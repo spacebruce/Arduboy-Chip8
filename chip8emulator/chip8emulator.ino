@@ -8,7 +8,7 @@
 Arduboy2 System;
 
 Chip8 Chip8;
-DebugModule Debug = DebugModule(&Chip8);
+DebugModule Debug = DebugModule(Chip8);
 
 void setup()
 {
@@ -18,7 +18,7 @@ void setup()
 #ifdef SERIAL_DEBUG
   Serial.begin(9600);
 #endif
-  Chip8.Load(TestRom, TestRomSize);
+  Chip8.Load(TestRom);
 }
 
 void loop()
@@ -28,11 +28,11 @@ void loop()
   System.pollButtons();
 
   if(System.justPressed(A_BUTTON))
-    Chip8.Tick(&System, 1);
+    Chip8.Tick(System, 1);
   if(System.pressed(B_BUTTON))
-    Chip8.Tick(&System);
+    Chip8.Tick(System);
 
-  Debug.Tick(&System);
-  Debug.Draw(&System);
+  Debug.Tick(System);
+  Debug.Draw(System);
   System.display();
 }

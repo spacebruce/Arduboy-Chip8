@@ -17,11 +17,11 @@ enum class DebugScreenView : uint8_t
 class DebugModule
 {
 private:
-  Chip8* Emulator;
+  Chip8 * Emulator;
   size_t Scroll = 0x200;
   DebugScreenView ViewMode = DebugScreenView::Decimal8;
 public:
-  DebugModule(Chip8* Emulator);
-  void Tick(Arduboy2* System);
-  void Draw(Arduboy2* System);
+  DebugModule(Chip8 & Emulator);
+  void Tick(Arduboy2 & System);
+  void Draw(Arduboy2 & System);
 };

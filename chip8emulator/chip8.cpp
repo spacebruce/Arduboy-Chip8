@@ -1,6 +1,6 @@
 #include "chip8.h"
 
-void Chip8::ExecuteInstruction(Arduboy2* System)
+void Chip8::ExecuteInstruction(Arduboy2 & System)
 {
   uint8_t High = this->ReadMemory(this->ProgramCounter);
   uint8_t Low = this->ReadMemory(this->ProgramCounter + 1);
@@ -19,11 +19,10 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
         case 0xCF:  //Scroll down
         break;
         case 0xE0:  //CLS - Clear screen
-          System->clear();
+          System.clear();
         break;
         case 0xEE:  //RTS - return from sub
-          this->ProgramCounter = (this->ReadMemory(this->StackPointer - 1) << 8) + this->ReadMemory(this->StackPointer - 2);
-          this->StackPointer -= 2;
+          this->ProgramCounter = this->PullWord();
         break;
         case 0xFB:  //SCRR - Scroll right
         break;
@@ -41,9 +40,7 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
     this->ProgramCounter = Opcode & 0x0FFF;
   break;
   case 0x20:  //CALL
-    this->WriteMemory(this->StackPointer + 0, static_cast<uint8_t>(this->ProgramCounter & 0xFF));
-    this->WriteMemory(this->StackPointer + 1, static_cast<uint8_t>((this->ProgramCounter >> 8) & 0xFF));
-    this->StackPointer += 2;
+    this->PushWord(this->ProgramCounter);
     this->ProgramCounter = Opcode & 0x0FFF;
   break;
   case 0x30:  //SKE - Skip if selected register = low byte
@@ -118,8 +115,8 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
   case 0xA0:  //LOAD - load index reg with data
     this->Index = Opcode & 0x0FFF;
   break;
-  case 0xB0:  //JUMP + i - PC goes moved to Index + operand const
-    this->ProgramCounter = (this->ReadMemory(this->Register[0]) << 8) + (this->ReadMemory(this->Register[0]+1)) + Opcode & 0x0FFF;
+  case 0xB0:  //JUMP + i - PC goes moved to immediate address + V0
+    this->ProgramCounter = (Opcode & 0x0FFF) + this->Register[0];
   break;
   case 0xC0:  //RAND - generated random number &'d with low byte, store in selected register
     this->Register[byteX] = random(255) & Low;
@@ -142,10 +139,10 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
       {
         if((sprite >> drawX) & 0x1) //If current pixel in sprite is on
         {
-          bool enabled = System->getPixel(x + (7 - drawX), y + drawY);
+          bool enabled = System.getPixel(x + (7 - drawX), y + drawY);
           if (enabled) //If surface pixel is on
             this->Register[0xF] = 1; //Collision on
-          System->drawPixel((x + (7 - drawX)) % 64, (y + drawY) % 32, !enabled);  //invert drawn pixel
+          System.drawPixel((x + (7 - drawX)) % 64, (y + drawY) % 32, !enabled);  //invert drawn pixel
         }
       }
     }
@@ -306,13 +303,28 @@ void Chip8::WriteMemory(const size_t Location, const uint8_t Value)
 #endif
 }
 
+void Chip8::PushWord(uint16_t Word)
+{
+  this->WriteMemory(this->StackPointer + 0, static_cast<uint8_t>((Word >> 0) & 0xFF));
+  this->WriteMemory(this->StackPointer + 1, static_cast<uint8_t>((Word >> 8) & 0xFF));
+  this->StackPointer += 2;
+}
 
-Chip8::Chip8(uint8_t* Rom, const size_t RomSize)
+uint16_t Chip8::PullWord()
+{
+  this->StackPointer -= 2;
+  const uint8_t Low = this->ReadMemory(this->StackPointer + 0);
+  const uint8_t High = this->ReadMemory(this->StackPointer + 1);
+  return ((High << 8) | (Low << 0));
+}
+
+
+Chip8::Chip8(const uint8_t * Rom, const size_t RomSize)
 {
   this->Load(Rom, RomSize);
 }
 
-void Chip8::Load(uint8_t* Rom, const size_t RomSize)
+void Chip8::Load(const uint8_t * Rom, const size_t RomSize)
 {
   //Configure rom
   this->Rom = Rom;
@@ -322,7 +334,7 @@ void Chip8::Load(uint8_t* Rom, const size_t RomSize)
   this->Reset();
 }
 
-void Chip8::Tick(Arduboy2* System, uint8_t Repeat = 50)
+void Chip8::Tick(Arduboy2 & System, uint8_t Repeat)
 {
   for(auto i = 0; i < Repeat; ++i)
     ExecuteInstruction(System);

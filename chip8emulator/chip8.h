@@ -32,7 +32,7 @@ public:
 //RAM
   uint8_t Memory[MemorySize];
 //ROM
-  uint8_t* Rom;
+  const uint8_t * Rom;
   size_t RomSize;
   size_t RomStart = 0x200;
   size_t RomEnd = 0;
@@ -53,15 +53,30 @@ public:
   uint16_t ErrorData = 0;
 //things
   MemoryPartition GetMemoryPartition(const size_t Location) const;
-  void ExecuteInstruction(Arduboy2* System);
+  void ExecuteInstruction(Arduboy2 & System);
   uint8_t ReadMemory(const size_t Location);
   void WriteMemory(const size_t Location, const uint8_t Value);
+  void PushWord(uint16_t Word);
+  uint16_t PullWord();
+
 public:
   Chip8() = default;
-  Chip8(uint8_t* Rom, const size_t RomSize);
+  Chip8(const uint8_t * Rom, const size_t RomSize);
 
-  void Load(uint8_t* Rom, const size_t RomSize);
+  template<size_t size>
+  Chip8(const uint8_t (&rom)[size]) :
+    Chip8(rom, size)
+  {
+  }
+
+  void Load(const uint8_t * Rom, const size_t RomSize);
   void Reset(void);
-  void Tick(Arduboy2* System, uint8_t Repeat = 50);
+  void Tick(Arduboy2 & System, uint8_t Repeat = 50);
   void Halt(void);
+
+  template<size_t size>
+ void Load(const uint8_t (&rom)[size])
+  {
+    this->Load(rom, size);
+  }
 };
