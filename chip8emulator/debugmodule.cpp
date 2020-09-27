@@ -77,11 +77,11 @@ void DebugModule::Draw(Arduboy2 & System)
     uint8_t High = Emulator->ReadMemory(Emulator->ProgramCounter);
     uint8_t Low = Emulator->ReadMemory(Emulator->ProgramCounter + 1);
     uint16_t Opcode = (High << 8) | Low;
-    System.print(High);
+    System.print(High, HEX);
     System.print(",");
-    System.print(Low);
+    System.print(Low, HEX);
     System.print("x");
-    System.print(Opcode);
+    System.print(Opcode, HEX);
     System.setCursor(65,0);
     System.print("DEBUG CPU");
     System.setCursor(65,8);
@@ -96,9 +96,9 @@ void DebugModule::Draw(Arduboy2 & System)
     for(uint8_t i = 0; i < 8; ++i)
     {
       System.setCursor(i*16, 40);
-      System.print(Emulator->Register[i]);
+      System.print(Emulator->Register[i], HEX);
       System.setCursor(i*16, 48);
-      System.print(Emulator->Register[i+8]);
+      System.print(Emulator->Register[i+8], HEX);
     }
   }
 
