@@ -28,6 +28,9 @@ void loop()
   System.pollButtons();
 
   Debug.PreTick();
+
+  Chip8.UpdateDelayTimer();
+  Chip8.UpdateSoundTimer();
   
   if(System.justPressed(A_BUTTON))
     Chip8.Tick(System, 1);
