@@ -114,12 +114,19 @@ void DebugModule::Draw(Arduboy2 & System)
     System.setCursor(65,8);
     System.print(F("SP"));
     System.print(Emulator->StackPointer);
-    for(uint8_t i = 0; i < 8; ++i)  //16 stack entries...
+
+    for(uint8_t i = 0; i < Chip8::StackSize; ++i)
     {
-      System.setCursor(i*16, 40);
-      System.print(Emulator->Stack[i], HEX);
-      System.setCursor(i*16, 48);
-      System.print(Emulator->Stack[i+8], HEX);
+      const uint8_t High = ((Emulator->Stack[i] >> 8) & 0xFF);
+      const uint8_t Low = ((Emulator->Stack[i] >> 0) & 0xFF);
+
+      const int16_t X = (i * 16);
+
+      System.setCursor(X, 40);
+      System.print(High, HEX);
+
+      System.setCursor(X, 48);
+      System.print(Low, HEX);
     }
   }
 

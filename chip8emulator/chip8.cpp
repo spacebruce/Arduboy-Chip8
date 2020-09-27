@@ -242,17 +242,6 @@ MemoryPartition Chip8::GetMemoryPartition(const size_t Location) const
   }
 }
 
-void Chip8::WriteStack(const uint8_t Value)
-{
-  this->Stack[StackPointer] = Value;
-  ++this->StackPointer;
-}
-uint8_t Chip8::ReadStack()
-{
-  --this->StackPointer;
-  return this->Stack[StackPointer];
-}
-
 uint8_t Chip8::ReadMemory(const size_t Location)
 {
 #if SMALL_MEMORY
@@ -308,15 +297,14 @@ void Chip8::WriteMemory(const size_t Location, const uint8_t Value)
 
 void Chip8::PushWord(uint16_t Word)
 {
-  this->WriteStack(static_cast<uint8_t>((Word >> 0) & 0xFF));
-  this->WriteStack(static_cast<uint8_t>((Word >> 8) & 0xFF));
+  this->Stack[this->StackPointer] = Word;
+  ++this->StackPointer;
 }
 
 uint16_t Chip8::PullWord()
 {
-  const uint8_t Low = this->ReadStack();
-  const uint8_t High = this->ReadStack();
-  return ((High << 8) | (Low << 0));
+  --this->StackPointer;
+  return this->Stack[this->StackPointer];
 }
 
 Chip8::Chip8(const uint8_t * Rom, const size_t RomSize)
