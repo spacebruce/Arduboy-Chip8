@@ -16,17 +16,11 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
     case 0x00:  //0x00XX - misc routines
       switch(Low)
       {
-        case 0xCF:  //Scroll down
-        break;
         case 0xE0:  //CLS - Clear screen
           System.clear();
         break;
         case 0xEE:  //RTS - return from sub
           this->ProgramCounter = this->PullWord();
-        break;
-        case 0xFB:  //SCRR - Scroll right
-        break;
-        case 0xFC:  //SCRL - Scroll left
         break;
         case 0xFD:  //EXIT - End program
           this->Halt();
