@@ -18,6 +18,8 @@ enum class CPUError : uint8_t
   MemoryWrite,
   MemoryRead,
   UnknownOpcode,
+  StackOverflow,
+  StackUnderflow,
 };
 
 enum class MemoryPartition : uint8_t

@@ -150,6 +150,13 @@ void DebugModule::Draw(Arduboy2 & System)
           System.print(F("UNKNW : "));
           System.print(Emulator->ErrorData, HEX);
         break;
+        case CPUError::StackOverflow:
+          System.print(F("OVER"));
+        break;
+        case CPUError::StackUnderflow:
+          System.print(F("UNDER"));
+        break;
+          // Pepsi cola
       }
     }
   }

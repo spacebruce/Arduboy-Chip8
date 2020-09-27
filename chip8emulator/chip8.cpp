@@ -290,12 +290,24 @@ void Chip8::WriteMemory(const size_t Location, const uint8_t Value)
 
 void Chip8::PushWord(uint16_t Word)
 {
+  if(this->StackPointer >= this->StackSize)
+  {
+    this->Error(CPUError::StackOverflow);
+    return;
+  }
+
   this->Stack[this->StackPointer] = Word;
   ++this->StackPointer;
 }
 
 uint16_t Chip8::PullWord()
 {
+  if(this->StackPointer == this->StackStart)
+  {
+    this->Error(CPUError::StackUnderflow);
+    return 0;
+  }
+
   --this->StackPointer;
   return this->Stack[this->StackPointer];
 }
