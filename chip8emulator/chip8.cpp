@@ -7,12 +7,14 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
   uint16_t Opcode = (High << 8) | Low;
   this->ProgramCounter += 2;
 
-  uint16_t location;
   uint8_t byteX = High & 0x0F;
   uint8_t byteY = (Low & 0xF0) >> 4;
-  switch(High & 0xF0)
+
+  const uint8_t nibble = ((High >> 4) & 0x0F);
+
+  switch(nibble)
   {
-    case 0x00:  //0x00XX - misc routines
+    case 0x0:  //0x00XX - misc routines
       switch(Low)
       {
         case 0xCF:  //Scroll down
@@ -32,38 +34,38 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
         return;
       }
   break;
-  case 0x10:  //JUMP to xNNN
+  case 0x1:  //JUMP to xNNN
     this->ProgramCounter = Opcode & 0x0FFF;
   return;
-  case 0x20:  //CALL
+  case 0x2:  //CALL
     this->PushWord(this->ProgramCounter);
     this->ProgramCounter = Opcode & 0x0FFF;
   return;
-  case 0x30:  //SKE - Skip if selected register = low byte
+  case 0x3:  //SKE - Skip if selected register = low byte
     if(this->Register[byteX] == Low)
     {
       this->ProgramCounter += 2;
     }
   return;
-  case 0x40:  //SKNE - Skip if reg != low byte
+  case 0x4:  //SKNE - Skip if reg != low byte
     if(this->Register[byteX] != Low)
     {
       this->ProgramCounter += 2;
     }
   return;
-  case 0x50:  //??? - Skip if byteY register == selected register
+  case 0x5:  //??? - Skip if byteY register == selected register
     if(this->Register[byteY] == this->Register[byteX])
     {
       this->ProgramCounter += 2;
     }
   return;
-  case 0x60: //LOAD - store constant into register
+  case 0x6: //LOAD - store constant into register
     this->Register[byteX] = Low;
   return;
-  case 0x70:  //ADD - Add value to register
+  case 0x7:  //ADD - Add value to register
     this->Register[byteX] += Low;
   return;
-  case 0x80:  //Numerical operations and stuff
+  case 0x8:  //Numerical operations and stuff
     switch(Low & 0x0F)
     {
       case 0x0: //LOAD
@@ -99,22 +101,23 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
       return;
     }
   break;
-  case 0x90:  //SKNE - Skip if byteY reg != byteX reg
+  case 0x9:  //SKNE - Skip if byteY reg != byteX reg
     if(this->Register[byteY] != this->Register[byteX])
     {
       this->ProgramCounter += 2;
     }
   return;
-  case 0xA0:  //LOAD - load index reg with data
+  case 0xA:  //LOAD - load index reg with data
     this->Index = Opcode & 0x0FFF;
   return;
-  case 0xB0:  //JUMP + i - PC goes moved to immediate address + V0
+  case 0xB:  //JUMP + i - PC goes moved to immediate address + V0
     this->ProgramCounter = (Opcode & 0x0FFF) + this->Register[0];
   return;
-  case 0xC0:  //RAND - generated random number &'d with low byte, store in selected register
+  case 0xC:  //RAND - generated random number &'d with low byte, store in selected register
     this->Register[byteX] = random(255) & Low;
   return;
-  case 0xD0:
+  case 0xD:
+  {
     /*  DXXX
       D - sprite draw
       X - X position register
@@ -139,8 +142,9 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
         }
       }
     }
+  }
   return;
-  case 0xE0:  //Input stuff
+  case 0xE:  //Input stuff
     switch(Low)
     {
       case 0x9E:
@@ -149,7 +153,7 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
       return;
     }
   break;
-  case 0xF0: // IO stuff
+  case 0xF: // IO stuff
     switch(Low)
     {
       case 0x07: //Load delay - timer -> register
@@ -224,17 +228,16 @@ MemoryPartition Chip8::GetMemoryPartition(const size_t Location) const
 uint8_t Chip8::ReadMemory(const size_t Location)
 {
 #if SMALL_MEMORY
+  // Font Space
+  if(Location < FontDataSize) 
+  {
+    return static_cast<uint8_t>(pgm_read_byte(&FontData[Location]));
+  }
+
   // System Space
   if(Location < this->RomStart) 
   {
-    // Font Space
-    if(Location < FontDataSize) 
-    {
-      return static_cast<uint8_t>(pgm_read_byte(&FontData[Location]));
-    }
-
     this->Error(CPUError::SystemRead, Location);
-
     return 0;
   }
 
@@ -249,12 +252,13 @@ uint8_t Chip8::ReadMemory(const size_t Location)
   if((Location - this->RomEnd) > MemorySize)
   {
     this->Error(CPUError::AbsentRead, Location);
-    return;
+    return 0;
   }
 
   if(Location > 4096)
   {
     this->Error(CPUError::ExternalRead, Location);
+    return 0;
   }
 
   return this->Memory[Location - this->RomEnd];
