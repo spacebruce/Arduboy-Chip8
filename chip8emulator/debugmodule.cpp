@@ -111,6 +111,9 @@ void DebugModule::Draw(Arduboy2 & System)
   {
     System.setCursor(65,0);
     System.print(F("STACK VIEW"));
+    System.setCursor(65,8);
+    System.print(F("SP"));
+    System.print(Emulator->StackPointer);
     for(uint8_t i = 0; i < 8; ++i)  //16 stack entries...
     {
       System.setCursor(i*16, 40);
