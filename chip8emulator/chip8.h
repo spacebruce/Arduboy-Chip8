@@ -41,6 +41,9 @@ public:
 #else
   static constexpr size_t MemorySize = 4096;
 #endif
+
+  static constexpr uint16_t SoundFrequency = 440;
+
 //RAM
   uint8_t Memory[MemorySize];
 //ROM
@@ -57,8 +60,8 @@ public:
   uint8_t StackPointer = StackStart;
   uint16_t Stack[StackSize];
   uint16_t ProgramCounter = 0;
-  uint16_t TimerDelay = 0;
-  uint16_t TimerSound = 0;
+  uint16_t DelayTimer = 0;
+  uint16_t SoundTimer = 0;
 //Debug
   CPUMode Mode = CPUMode::Startup;
   CPUError ErrorType = CPUError::None;
@@ -86,6 +89,8 @@ public:
   void Reset(void);
   void Tick(Arduboy2 & System);
   void Tick(Arduboy2 & System, uint8_t Repeat);
+  void UpdateDelayTimer();
+  void UpdateSoundTimer();
   void Halt(void);
 
   template<size_t size>

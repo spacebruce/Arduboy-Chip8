@@ -154,17 +154,24 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
     switch(Low)
     {
       case 0x07: //Load delay - timer -> register
-        this->Register[byteX] = this->TimerDelay;
+        this->Register[byteX] = this->DelayTimer;
       return;
       case 0x0A:  //KEYD - Pause until key pressed
         //to do
         this->Register[byteX] = 0;
       return;
       case 0x15:  //Store delay - register -> timer
-        this->TimerDelay = this->Register[byteX];
+        this->DelayTimer = this->Register[byteX];
       return;
       case 0x18:  //Store sound - register -> timer
-        this->TimerSound = this->Register[byteX];
+      {
+        this->SoundTimer = this->Register[byteX];
+
+        if(this->SoundTimer > 0)
+          BeepPin1::tone(BeepPin1::freq(Chip8::SoundFrequency));
+        else
+          BeepPin1::noTone();
+      }
       return;
       case 0x1E:  //Add I
         this->Index += this->Register[byteX];
@@ -365,6 +372,21 @@ void Chip8::Tick(Arduboy2 & System, uint8_t Repeat)
   }
 }
 
+void Chip8::UpdateDelayTimer()
+{
+  if(this->DelayTimer > 0)
+    --this->DelayTimer;
+}
+
+void Chip8::UpdateSoundTimer()
+{
+  if(this->SoundTimer > 0)
+    --this->SoundTimer;
+
+  if(this->SoundTimer == 0)
+    BeepPin1::noTone();
+}
+
 void Chip8::Halt(void)
 {
   this->Mode = CPUMode::Stopped;
@@ -378,8 +400,8 @@ void Chip8::Reset(void)
       this->Register[i] = 0;
       this->RegisterTemp[i] = 0;
   }
-  this->TimerDelay = 0;
-  this->TimerSound = 0;
+  this->DelayTimer = 0;
+  this->SoundTimer = 0;
   this->Index = 0;
   this->ProgramCounter = this->RomStart;
   this->StackPointer = this->StackStart;

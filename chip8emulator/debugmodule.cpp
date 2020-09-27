@@ -111,9 +111,9 @@ void DebugModule::Draw(Arduboy2 & System)
     System.setCursor(65,16);
     System.print(F("I :"));  System.print(Emulator->Index);
     System.setCursor(80,24);
-    System.print(F("TD:"));  System.print(Emulator->TimerDelay);
+    System.print(F("DT:"));  System.print(Emulator->DelayTimer);
     System.setCursor(80,32);
-    System.print(F("TS:"));  System.print(Emulator->TimerSound);
+    System.print(F("ST:"));  System.print(Emulator->SoundTimer);
     System.setCursor(0,40);
     for(uint8_t i = 0; i < 8; ++i)
     {

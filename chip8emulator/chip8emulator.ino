@@ -15,6 +15,9 @@ void setup()
   System.begin();
   System.clear();
   System.setFrameRate(60);
+
+  BeepPin1::begin();
+
 #ifdef SERIAL_DEBUG
   Serial.begin(9600);
 #endif
@@ -28,6 +31,9 @@ void loop()
   System.pollButtons();
 
   Debug.PreTick();
+
+  Chip8.UpdateDelayTimer();
+  Chip8.UpdateSoundTimer();
   
   if(System.justPressed(A_BUTTON))
     Chip8.Tick(System, 1);
