@@ -173,7 +173,8 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
         this->Index = this->Register[byteX] * 5;
       return;
       case 0x33:  //BCD
-        //not today, satan
+          this->WriteMemory(this->Index + 0, (this->Register[byteX]) / 100);
+          this->WriteMemory(this->Index + 1, (this->Register[byteX] % 100) / 10);
           this->WriteMemory(this->Index + 2, (this->Register[byteX]) % 10);
       return;
       case 0x55:  //STORE I - Store n registers into memory[index]
