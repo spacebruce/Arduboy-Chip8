@@ -22,8 +22,7 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
           System.clear();
         break;
         case 0xEE:  //RTS - return from sub
-          this->ProgramCounter = (this->ReadMemory(this->StackPointer - 1) << 8) + this->ReadMemory(this->StackPointer - 2);
-          this->StackPointer -= 2;
+          this->ProgramCounter = this->PullWord();
         break;
         case 0xFB:  //SCRR - Scroll right
         break;
@@ -41,9 +40,7 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
     this->ProgramCounter = Opcode & 0x0FFF;
   break;
   case 0x20:  //CALL
-    this->WriteMemory(this->StackPointer + 0, static_cast<uint8_t>(this->ProgramCounter & 0xFF));
-    this->WriteMemory(this->StackPointer + 1, static_cast<uint8_t>((this->ProgramCounter >> 8) & 0xFF));
-    this->StackPointer += 2;
+    this->PushWord(this->ProgramCounter);
     this->ProgramCounter = Opcode & 0x0FFF;
   break;
   case 0x30:  //SKE - Skip if selected register = low byte
@@ -304,6 +301,21 @@ void Chip8::WriteMemory(const size_t Location, const uint8_t Value)
 #else
   this->Memory[Location] = Value;
 #endif
+}
+
+void Chip8::PushWord(uint16_t Word)
+{
+  this->WriteMemory(this->StackPointer + 0, static_cast<uint8_t>((Word >> 0) & 0xFF));
+  this->WriteMemory(this->StackPointer + 1, static_cast<uint8_t>((Word >> 8) & 0xFF));
+  this->StackPointer += 2;
+}
+
+uint16_t Chip8::PullWord()
+{
+  this->StackPointer -= 2;
+  const uint8_t Low = this->ReadMemory(this->StackPointer + 0);
+  const uint8_t High = this->ReadMemory(this->StackPointer + 1);
+  return ((High << 8) | (Low << 0));
 }
 
 
