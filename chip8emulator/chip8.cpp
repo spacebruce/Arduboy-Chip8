@@ -22,7 +22,7 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
         return;
         case 0xEE:  //RTS - return from sub
           this->ProgramCounter = this->PullWord();
-        break;
+        return;
         case 0xFD:  //EXIT - End program
           this->Halt();
         return;
