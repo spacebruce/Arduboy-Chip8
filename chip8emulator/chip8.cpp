@@ -132,17 +132,20 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
     uint8_t y = this->Register[byteY];//this->Register[(Low & 0xF0) >> 4];
     uint8_t height = (Low & 0x0F);
     this->Register[0xF] = 0;  //Collision register
+    uint8_t screenX, screenY;
     for(uint8_t drawY = 0; drawY < height; ++drawY)
     {
+      screenY = (y + drawY) % 32;
       uint8_t sprite = this->ReadMemory(this->Index + drawY);
       for(uint8_t drawX = 0; drawX < 8; ++drawX)
       {
         if((sprite >> drawX) & 0x1) //If current pixel in sprite is on
         {
-          bool enabled = System.getPixel(x + (7 - drawX), y + drawY);
+          screenX = (x + (7 - drawX)) % 64;
+          bool enabled = System.getPixel(screenX, screenY);
           if (enabled) //If surface pixel is on
             this->Register[0xF] = 1; //Collision on
-          System.drawPixel((x + (7 - drawX)) % 64, (y + drawY) % 32, !enabled);  //invert drawn pixel
+          System.drawPixel(screenX, screenY, !enabled);  //invert drawn pixel
         }
       }
     }
