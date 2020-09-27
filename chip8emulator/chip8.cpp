@@ -7,8 +7,9 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
   uint16_t Opcode = (High << 8) | Low;
   this->ProgramCounter += 2;
 
+  bool unknown = false; //error decoding opcode
   uint16_t location;
-  uint8_t target = High & 0xF;
+  uint8_t target = High & 0x0F;
   uint8_t source = (Low & 0xF0) >> 4;
   switch(High & 0xF0)
   {
@@ -31,6 +32,9 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
         case 0xFD:  //EXIT - End program
           this->Halt();
         break;
+        default:
+          unknown = true;
+        break;
       }
   break;
   case 0x10:  //JUMP to xNNN
@@ -38,7 +42,7 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
   break;
   case 0x20:  //CALL
     this->WriteMemory(this->StackPointer + 0, static_cast<uint8_t>(this->ProgramCounter & 0xFF));
-    this->WriteMemory(this->StackPointer + 1, static_cast<uint8_t>((this->ProgramCounter >> 8) & 00FF));
+    this->WriteMemory(this->StackPointer + 1, static_cast<uint8_t>((this->ProgramCounter >> 8) & 0xFF));
     this->StackPointer += 2;
     this->ProgramCounter = Opcode & 0x0FFF;
   break;
@@ -115,6 +119,7 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
         this->Register[source] = this->Register[source] << 1;
       break;
       default:
+        unknown = true;
       break;
     }
   break;
@@ -136,12 +141,12 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
   case 0xD0:
     /*  DXXX
       D - sprite draw
-      X - X position
-      X - Y position
+      X - X position register
+      X - Y position register
       X - Sprite height
     */
-    uint8_t x = target; //this->Register[High & 0x0F];
-    uint8_t y = source; //this->Register[(Low & 0xF0) >> 4];
+    uint8_t x = this->Register[target];//this->Register[High & 0x0F];
+    uint8_t y = this->Register[source];//this->Register[(Low & 0xF0) >> 4];
     uint8_t height = (Low & 0x0F);
     this->Register[0xF] = 0;  //Collision register
     for(uint8_t drawY = 0; drawY < height; ++drawY)
@@ -149,12 +154,12 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
       uint8_t sprite = ReadMemory(this->Index + drawY);
       for(uint8_t drawX = 0; drawX < 8; ++drawX)
       {
-        if(sprite & (0x80 >> drawX) != 0) //If current pixel in sprite is on
+        if((sprite >> drawX) & 0x1) //If current pixel in sprite is on
         {
-          bool lit = System->getPixel(x + drawX, y + drawY);
-          if (lit) //If surface pixel is on
-            this->Register[0xF] = true; //Collision on
-          System->drawPixel((x + drawX) % 64, (y + drawY) % 32, !lit);  //invert drawn pixel
+          bool enabled = System->getPixel(x + drawX, y + drawY);
+          if (enabled) //If surface pixel is on
+            this->Register[0xF] = 1; //Collision on
+          System->drawPixel((x + drawX) % 64, (y + drawY) % 32, !enabled);  //invert drawn pixel
         }
       }
     }
@@ -167,6 +172,7 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
       case 0xA1:
       break;
       default:
+        unknown = true;
       break;
     }
   break;
@@ -222,9 +228,20 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
         }
       break;
       default:
+        unknown = true;
       break;
     }
     break;
+    default:
+      unknown = true;
+    break;
+  }
+
+  if(unknown)
+  {
+    this->Mode = CPUMode::Error;
+    this->Error = CPUError::UnknownOpcode;
+    this->ErrorData = Opcode;
   }
 }
 
@@ -321,9 +338,9 @@ void Chip8::Load(uint8_t* Rom, const size_t RomSize)
   this->Reset();
 }
 
-void Chip8::Tick(Arduboy2* System)
+void Chip8::Tick(Arduboy2* System, uint8_t Repeat = 50)
 {
-  //for(auto i = 0; i < 50; ++i)
+  for(auto i = 0; i < Repeat; ++i)
     ExecuteInstruction(System);
 }
 

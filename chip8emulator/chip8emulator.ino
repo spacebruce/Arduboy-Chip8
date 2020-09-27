@@ -28,7 +28,7 @@ void loop()
   System.pollButtons();
 
   if(System.justPressed(A_BUTTON))
-    Chip8.Tick(&System);
+    Chip8.Tick(&System, 1);
   if(System.pressed(B_BUTTON))
     Chip8.Tick(&System);
 

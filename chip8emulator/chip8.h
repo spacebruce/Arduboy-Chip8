@@ -36,7 +36,7 @@ public:
   size_t RomSize;
   size_t RomStart = 0x200;
   size_t RomEnd = 0;
-  size_t StackStart = 0x52;
+  size_t StackStart = 0x100;
   size_t StackSize = 0xF;
 //CPU/shit
   uint8_t Register[16];
@@ -62,6 +62,6 @@ public:
 
   void Load(uint8_t* Rom, const size_t RomSize);
   void Reset(void);
-  void Tick(Arduboy2* System);
+  void Tick(Arduboy2* System, uint8_t Repeat = 50);
   void Halt(void);
 };
