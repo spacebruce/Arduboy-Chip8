@@ -266,6 +266,12 @@ void Chip8::WriteMemory(const size_t Location, const uint8_t Value)
   }
   else
   {
+    if(Location < this->RomEnd)
+    {
+      this->Error(CPUError::RomWrite, Location);
+      return;
+    }
+
     if(Location > 4096)
     {
       this->Error(CPUError::ExternalWrite, Location);

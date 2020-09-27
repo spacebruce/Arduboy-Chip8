@@ -165,6 +165,10 @@ void DebugModule::Draw(Arduboy2 & System)
           System.print(F("ABSRE : "));
           System.print(Emulator->ErrorData);
         break;
+        case CPUError::RomWrite:
+          System.print(F("ROMWR : "));
+          System.print(Emulator->ErrorData);
+        break;
       }
     }
   }

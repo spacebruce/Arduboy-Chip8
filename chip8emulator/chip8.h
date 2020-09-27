@@ -22,6 +22,9 @@ enum class CPUError : uint8_t
   StackUnderflow,
   AbsentWrite,
   AbsentRead,
+  SystemWrite,
+  SystemRead,
+  RomWrite,
 };
 
 enum class MemoryPartition : uint8_t
