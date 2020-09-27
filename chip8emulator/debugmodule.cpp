@@ -24,16 +24,32 @@ void DebugModule::Tick(Arduboy2 & System)
   {
     this->ViewMode = static_cast<DebugScreenView>((static_cast<uint8_t>(this->ViewMode) + 1) % static_cast<uint8_t>(DebugScreenView::Sizeof));
   }
-
-//Scroll
-  if(System.pressed(UP_BUTTON))
+//Scroll memory viewer
+  if(this->ViewMode == DebugScreenView::Memory8 || this->ViewMode == DebugScreenView::Memory16)
   {
-    if(this->Scroll > 0)
-      --(this->Scroll);
+    if(System.pressed(UP_BUTTON))
+    {
+      if(this->Scroll > 0)
+        --this->Scroll;
+    }
+    if(System.pressed(DOWN_BUTTON))
+    {
+      this->Scroll = (this->Scroll + 1);
+    }
   }
-  if(System.pressed(DOWN_BUTTON))
+//Controller
+  if(this->ViewMode == DebugScreenView::Input)
   {
-    this->Scroll = (this->Scroll + 1);
+    if(System.justPressed(UP_BUTTON))
+    {
+      --this->InputSelected;
+      if(this->InputSelected == 0xFF)
+        this->InputSelected = 0x0F;
+    }
+    if(System.justPressed(DOWN_BUTTON))
+    {
+      this->InputSelected = (this->InputSelected + 1) % 0x10;
+    }
   }
 }
 
@@ -50,7 +66,7 @@ void DebugModule::Draw(Arduboy2 & System)
   ///Memory viewer
   uint8_t line = 1;
 
-  if(this->ViewMode == DebugScreenView::Decimal8)
+  if(this->ViewMode == DebugScreenView::Memory8)
   {
     System.setCursor(65, 0);
     System.println(F("8 bit"));
@@ -62,7 +78,7 @@ void DebugModule::Draw(Arduboy2 & System)
       System.println(Emulator->ReadMemory(i), HEX);
     }
   }
-  if(this->ViewMode == DebugScreenView::Decimal16)
+  if(this->ViewMode == DebugScreenView::Memory16)
   {
     System.setCursor(65, 0);
     System.println(F("16 bit"));
@@ -115,7 +131,7 @@ void DebugModule::Draw(Arduboy2 & System)
     System.print(F("SP"));
     System.print(Emulator->StackPointer);
 
-    for(uint8_t i = 0; i < Chip8::StackSize; ++i)
+    for(uint8_t i = 0; i < Chip8::StackSize / 2; ++i)
     {
       const uint8_t High = ((Emulator->Stack[i] >> 8) & 0xFF);
       const uint8_t Low = ((Emulator->Stack[i] >> 0) & 0xFF);
@@ -128,6 +144,22 @@ void DebugModule::Draw(Arduboy2 & System)
       System.setCursor(X, 48);
       System.print(Low, HEX);
     }
+  }
+  if(this->ViewMode == DebugScreenView::Input)
+  {
+    for(uint8_t i = 0; i < 8; ++i)
+    {
+      const uint8_t High = i;
+      const uint8_t Low = i + 8;
+      const int16_t X = (i * 16) + 8;
+
+      System.setCursor(X, 40);
+      System.print(High, HEX);
+      System.setCursor(X, 48);
+      System.print(Low, HEX);
+    }
+    System.setCursor((this->InputSelected % 8) * 16, 40 + (this->InputSelected >= 8) * 8);
+    System.print(F(">"));
   }
 
   if(Emulator->Mode != CPUMode::Running)

@@ -7,10 +7,11 @@
 
 enum class DebugScreenView : uint8_t
 {
-  Decimal8,
-  Decimal16,
+  Memory8,
+  Memory16,
   Processor,
   Stack,
+  Input,
   Sizeof,
   End = 255,
 };
@@ -21,7 +22,9 @@ private:
   Chip8 * Emulator;
   size_t Scroll = 0x200;
   uint16_t CurrentOpcode = 0x0000;
-  DebugScreenView ViewMode = DebugScreenView::Decimal8;
+  DebugScreenView ViewMode = DebugScreenView::Memory8;
+  uint8_t Input[16];
+  uint8_t InputSelected = 0;
 public:
   DebugModule(Chip8 & Emulator);
   void PreTick();

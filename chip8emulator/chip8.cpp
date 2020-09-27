@@ -17,18 +17,12 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
     case 0x0:  //0x00XX - misc routines
       switch(Low)
       {
-        case 0xCF:  //Scroll down
-        return;
         case 0xE0:  //CLS - Clear screen
           System.clear();
         return;
         case 0xEE:  //RTS - return from sub
           this->ProgramCounter = this->PullWord();
-        return;
-        case 0xFB:  //SCRR - Scroll right
-        return;
-        case 0xFC:  //SCRL - Scroll left
-        return;
+        break;
         case 0xFD:  //EXIT - End program
           this->Halt();
         return;
@@ -128,17 +122,20 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
     uint8_t y = this->Register[byteY];//this->Register[(Low & 0xF0) >> 4];
     uint8_t height = (Low & 0x0F);
     this->Register[0xF] = 0;  //Collision register
+    uint8_t screenX, screenY;
     for(uint8_t drawY = 0; drawY < height; ++drawY)
     {
+      screenY = (y + drawY) % 32;
       uint8_t sprite = this->ReadMemory(this->Index + drawY);
       for(uint8_t drawX = 0; drawX < 8; ++drawX)
       {
         if((sprite >> drawX) & 0x1) //If current pixel in sprite is on
         {
-          bool enabled = System.getPixel(x + (7 - drawX), y + drawY);
+          screenX = (x + (7 - drawX)) % 64;
+          bool enabled = System.getPixel(screenX, screenY);
           if (enabled) //If surface pixel is on
             this->Register[0xF] = 1; //Collision on
-          System.drawPixel((x + (7 - drawX)) % 64, (y + drawY) % 32, !enabled);  //invert drawn pixel
+          System.drawPixel(screenX, screenY, !enabled);  //invert drawn pixel
         }
       }
     }
@@ -229,13 +226,13 @@ uint8_t Chip8::ReadMemory(const size_t Location)
 {
 #if SMALL_MEMORY
   // Font Space
-  if(Location < FontDataSize) 
+  if(Location < FontDataSize)
   {
     return static_cast<uint8_t>(pgm_read_byte(&FontData[Location]));
   }
 
   // System Space
-  if(Location < this->RomStart) 
+  if(Location < this->RomStart)
   {
     this->Error(CPUError::SystemRead, Location);
     return 0;
@@ -301,7 +298,7 @@ void Chip8::WriteMemory(const size_t Location, const uint8_t Value)
 #endif
 }
 
-void Chip8::PushWord(uint16_t Word)
+void Chip8::PushWord(const uint16_t Word)
 {
   if(this->StackPointer >= this->StackSize)
   {
