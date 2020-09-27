@@ -1,6 +1,6 @@
 #include "chip8.h"
 
-void Chip8::ExecuteInstruction(Arduboy2* System)
+void Chip8::ExecuteInstruction(Arduboy2 & System)
 {
   uint8_t High = this->ReadMemory(this->ProgramCounter);
   uint8_t Low = this->ReadMemory(this->ProgramCounter + 1);
@@ -19,7 +19,7 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
         case 0xCF:  //Scroll down
         break;
         case 0xE0:  //CLS - Clear screen
-          System->clear();
+          System.clear();
         break;
         case 0xEE:  //RTS - return from sub
           this->ProgramCounter = (this->ReadMemory(this->StackPointer - 1) << 8) + this->ReadMemory(this->StackPointer - 2);
@@ -142,10 +142,10 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
       {
         if((sprite >> drawX) & 0x1) //If current pixel in sprite is on
         {
-          bool enabled = System->getPixel(x + (7 - drawX), y + drawY);
+          bool enabled = System.getPixel(x + (7 - drawX), y + drawY);
           if (enabled) //If surface pixel is on
             this->Register[0xF] = 1; //Collision on
-          System->drawPixel((x + (7 - drawX)) % 64, (y + drawY) % 32, !enabled);  //invert drawn pixel
+          System.drawPixel((x + (7 - drawX)) % 64, (y + drawY) % 32, !enabled);  //invert drawn pixel
         }
       }
     }
@@ -322,7 +322,7 @@ void Chip8::Load(const uint8_t * Rom, const size_t RomSize)
   this->Reset();
 }
 
-void Chip8::Tick(Arduboy2* System, uint8_t Repeat = 50)
+void Chip8::Tick(Arduboy2 & System, uint8_t Repeat = 50)
 {
   for(auto i = 0; i < Repeat; ++i)
     ExecuteInstruction(System);
