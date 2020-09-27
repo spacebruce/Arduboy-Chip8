@@ -82,16 +82,16 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
         this->Register[byteX] -= this->Register[byteY];
       return;
       case 0x6: //SHR - Shift bits right. Bit 0 goes into reg 0xF
-        this->Register[0xF] = this->Register[byteY] & 0x1;
-        this->Register[byteY] = this->Register[byteY] >> 1;
+        this->Register[0xF] = this->Register[byteX] & 0x1;
+        this->Register[byteX] = this->Register[byteX] >> 1;
       return;
       case 0x7: //SUBN  - Subtract byteY from byteX, is borrow store 1 in reg 0xF
         this->Register[0xF] = this->Register[byteY] > this->Register[byteX];
-        this->Register[byteX] -= this->Register[byteY];
+        this->Register[byteX] = (this->Register[byteY] - this->Register[byteX]);
       return;
       case 0xE: //SHL - Shift bits left. Bit 7 goes into reg 0xF
-        this->Register[0xF] = (this->Register[byteY] >> 7) & 0x1;
-        this->Register[byteY] = this->Register[byteY] << 1;
+        this->Register[0xF] = (this->Register[byteX] >> 7) & 0x1;
+        this->Register[byteX] = this->Register[byteX] << 1;
       return;
     }
   break;
