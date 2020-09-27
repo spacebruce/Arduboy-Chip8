@@ -29,7 +29,7 @@ void DebugModule::Tick(Arduboy2 & System)
   {
     if(System.pressed(UP_BUTTON))
     {
-      if(this->Scroll > 0)
+      if(this->Scroll > 0x200)
         --this->Scroll;
     }
     if(System.pressed(DOWN_BUTTON))
