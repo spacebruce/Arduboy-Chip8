@@ -31,7 +31,7 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
           this->Halt();
         return;
       }
-  return;
+  break;
   case 0x10:  //JUMP to xNNN
     this->ProgramCounter = Opcode & 0x0FFF;
   return;
@@ -98,7 +98,7 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
         this->Register[byteY] = this->Register[byteY] << 1;
       return;
     }
-  return;
+  break;
   case 0x90:  //SKNE - Skip if byteY reg != byteX reg
     if(this->Register[byteY] != this->Register[byteX])
     {
@@ -148,7 +148,7 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
       case 0xA1:
       return;
     }
-  return;
+  break;
   case 0xF0: // IO stuff
     switch(Low)
     {
@@ -199,7 +199,7 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
         }
       return;
     }
-    return;
+    break;
   }
 
   this->Error(CPUError::UnknownOpcode, Opcode);
