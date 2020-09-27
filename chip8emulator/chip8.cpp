@@ -60,7 +60,9 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
   break;
   case 0x50:  //??? - Skip if source register == selected register
     if(this->Register[source] == this->Register[target])
+    {
       this->ProgramCounter += 2;
+    }
   break;
   case 0x60: //LOAD - store constant into register
     this->Register[target] = Low;
@@ -87,35 +89,19 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
         this->Register[target] = (this->Register[target] + this->Register[source]);
       break;
       case 0x5: //SUB - Subtract source from target, if borrow store 0 in reg 0xF
-        if(this->Register[target] > this->Register[source])
-        {
-          this->Register[0xF] = 1;
-          this->Register[target] -= this->Register[source];
-        }
-        else
-        {
-          this->Register[0xF] = 0;
-          this->Register[target] = 256 + (this->Register[target] - this->Register[source]);
-        }
+        this->Register[0xF] = this->Register[target] > this->Register[source];
+        this->Register[target] -= this->Register[source];
       break;
       case 0x6: //SHR - Shift bits right. Bit 0 goes into reg 0xF
-        this->Register[0xF] = (this->Register[source] & 0x1) ? 1 : 0;
+        this->Register[0xF] = this->Register[source] & 0x1;
         this->Register[source] = this->Register[source] >> 1;
       break;
       case 0x7: //SUBN  - Subtract source from target, is borrow store 1 in reg 0xF
-      if(this->Register[target] > this->Register[source])
-      {
-        this->Register[0xF] = 0;
+        this->Register[0xF] = this->Register[source] > this->Register[target];
         this->Register[target] -= this->Register[source];
-      }
-      else
-      {
-        this->Register[0xF] = 1;
-        this->Register[target] = 256 + (this->Register[target] - this->Register[source]);
-      }
       break;
       case 0xE: //SHL - Shift bits left. Bit 7 goes into reg 0xF
-        this->Register[0xF] = (this->Register[source] & 0x80) ? 1 : 0;
+        this->Register[0xF] = (this->Register[source] >> 7) & 0x1;
         this->Register[source] = this->Register[source] << 1;
       break;
       default:
@@ -133,7 +119,7 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
     this->Index = Opcode & 0x0FFF;
   break;
   case 0xB0:  //JUMP + i - PC goes moved to Index + operand const
-    this->ProgramCounter = (Opcode & 0x0FFF) + this->Index;
+    this->ProgramCounter = (ReadMemory(this->Register[0]) << 8) + (ReadMemory(this->Register[0]+1)) + Opcode & 0x0FFF;
   break;
   case 0xC0:  //RAND - generated random number &'d with low byte, store in selected register
     this->Register[target] = random(255) & Low;
@@ -156,10 +142,10 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
       {
         if((sprite >> drawX) & 0x1) //If current pixel in sprite is on
         {
-          bool enabled = System->getPixel(x + drawX, y + drawY);
+          bool enabled = System->getPixel(x + (7 - drawX), y + drawY);
           if (enabled) //If surface pixel is on
             this->Register[0xF] = 1; //Collision on
-          System->drawPixel((x + drawX) % 64, (y + drawY) % 32, !enabled);  //invert drawn pixel
+          System->drawPixel((x + (7 - drawX)) % 64, (y + drawY) % 32, !enabled);  //invert drawn pixel
         }
       }
     }
