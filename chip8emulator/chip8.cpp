@@ -9,8 +9,8 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
 
   bool unknown = false; //error decoding opcode
   uint16_t location;
-  uint8_t target = High & 0x0F;
-  uint8_t source = (Low & 0xF0) >> 4;
+  uint8_t byteX = High & 0x0F;
+  uint8_t byteY = (Low & 0xF0) >> 4;
   switch(High & 0xF0)
   {
     case 0x00:  //0x00XX - misc routines
@@ -47,70 +47,70 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
     this->ProgramCounter = Opcode & 0x0FFF;
   break;
   case 0x30:  //SKE - Skip if selected register = low byte
-    if(this->Register[target] == Low)
+    if(this->Register[byteX] == Low)
     {
       this->ProgramCounter += 2;
     }
   break;
   case 0x40:  //SKNE - Skip if reg != low byte
-    if(this->Register[target] != Low)
+    if(this->Register[byteX] != Low)
     {
       this->ProgramCounter += 2;
     }
   break;
-  case 0x50:  //??? - Skip if source register == selected register
-    if(this->Register[source] == this->Register[target])
+  case 0x50:  //??? - Skip if byteY register == selected register
+    if(this->Register[byteY] == this->Register[byteX])
     {
       this->ProgramCounter += 2;
     }
   break;
   case 0x60: //LOAD - store constant into register
-    this->Register[target] = Low;
+    this->Register[byteX] = Low;
   break;
   case 0x70:  //ADD - Add value to register
-    this->Register[target] += Low;
+    this->Register[byteX] += Low;
   break;
   case 0x80:  //Numerical operations and stuff
     switch(Low & 0x0F)
     {
       case 0x0: //LOAD
-        this->Register[target] = this->Register[source];
+        this->Register[byteX] = this->Register[byteY];
       break;
       case 0x1: //OR
-        this->Register[target] = (this->Register[target] | this->Register[source]);
+        this->Register[byteX] = (this->Register[byteX] | this->Register[byteY]);
       break;
       case 0x2: //AND
-        this->Register[target] = (this->Register[target] & this->Register[source]);
+        this->Register[byteX] = (this->Register[byteX] & this->Register[byteY]);
       break;
       case 0x3: //XOR
-        this->Register[target] = (this->Register[target] ^ this->Register[source]);
+        this->Register[byteX] = (this->Register[byteX] ^ this->Register[byteY]);
       break;
       case 0x4: //ADD
-        this->Register[target] = (this->Register[target] + this->Register[source]);
+        this->Register[byteX] = (this->Register[byteX] + this->Register[byteY]);
       break;
-      case 0x5: //SUB - Subtract source from target, if borrow store 0 in reg 0xF
-        this->Register[0xF] = this->Register[target] > this->Register[source];
-        this->Register[target] -= this->Register[source];
+      case 0x5: //SUB - Subtract byteY from byteX, if borrow store 0 in reg 0xF
+        this->Register[0xF] = this->Register[byteX] > this->Register[byteY];
+        this->Register[byteX] -= this->Register[byteY];
       break;
       case 0x6: //SHR - Shift bits right. Bit 0 goes into reg 0xF
-        this->Register[0xF] = this->Register[source] & 0x1;
-        this->Register[source] = this->Register[source] >> 1;
+        this->Register[0xF] = this->Register[byteY] & 0x1;
+        this->Register[byteY] = this->Register[byteY] >> 1;
       break;
-      case 0x7: //SUBN  - Subtract source from target, is borrow store 1 in reg 0xF
-        this->Register[0xF] = this->Register[source] > this->Register[target];
-        this->Register[target] -= this->Register[source];
+      case 0x7: //SUBN  - Subtract byteY from byteX, is borrow store 1 in reg 0xF
+        this->Register[0xF] = this->Register[byteY] > this->Register[byteX];
+        this->Register[byteX] -= this->Register[byteY];
       break;
       case 0xE: //SHL - Shift bits left. Bit 7 goes into reg 0xF
-        this->Register[0xF] = (this->Register[source] >> 7) & 0x1;
-        this->Register[source] = this->Register[source] << 1;
+        this->Register[0xF] = (this->Register[byteY] >> 7) & 0x1;
+        this->Register[byteY] = this->Register[byteY] << 1;
       break;
       default:
         unknown = true;
       break;
     }
   break;
-  case 0x90:  //SKNE - Skip if source reg != target reg
-    if(this->Register[source] != this->Register[target])
+  case 0x90:  //SKNE - Skip if byteY reg != byteX reg
+    if(this->Register[byteY] != this->Register[byteX])
     {
       this->ProgramCounter += 2;
     }
@@ -122,7 +122,7 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
     this->ProgramCounter = (ReadMemory(this->Register[0]) << 8) + (ReadMemory(this->Register[0]+1)) + Opcode & 0x0FFF;
   break;
   case 0xC0:  //RAND - generated random number &'d with low byte, store in selected register
-    this->Register[target] = random(255) & Low;
+    this->Register[byteX] = random(255) & Low;
   break;
   case 0xD0:
     /*  DXXX
@@ -131,8 +131,8 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
       X - Y position register
       X - Sprite height
     */
-    uint8_t x = this->Register[target];//this->Register[High & 0x0F];
-    uint8_t y = this->Register[source];//this->Register[(Low & 0xF0) >> 4];
+    uint8_t x = this->Register[byteX];//this->Register[High & 0x0F];
+    uint8_t y = this->Register[byteY];//this->Register[(Low & 0xF0) >> 4];
     uint8_t height = (Low & 0x0F);
     this->Register[0xF] = 0;  //Collision register
     for(uint8_t drawY = 0; drawY < height; ++drawY)
@@ -166,23 +166,23 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
     switch(Low)
     {
       case 0x07: //Load delay - timer -> register
-        this->Register[target] = this->TimerDelay;
+        this->Register[byteX] = this->TimerDelay;
       break;
       case 0x0A:  //KEYD - Pause until key pressed
         //to do
-        this->Register[target] = 0;
+        this->Register[byteX] = 0;
       break;
       case 0x15:  //Store delay - register -> timer
-        this->TimerDelay = this->Register[target];
+        this->TimerDelay = this->Register[byteX];
       break;
       case 0x18:  //Store sound - register -> timer
-        this->TimerSound = this->Register[target];
+        this->TimerSound = this->Register[byteX];
       break;
       case 0x1E:  //Add I
-        this->Index += this->Register[source];
+        this->Index += this->Register[byteY];
       break;
       case 0x29:  //Load sprite index
-        this->Index = this->Register[source] * 5;
+        this->Index = this->Register[byteY] * 5;
       break;
       case 0x33:  //BCD
         //not today, satan
@@ -191,24 +191,24 @@ void Chip8::ExecuteInstruction(Arduboy2* System)
         location = this->Index;
         for(uint8_t i = 0; i <= High & 0xF; ++i)
         {
-          this->WriteMemory(target + i, this->Register[i]);
+          this->WriteMemory(byteX + i, this->Register[i]);
         }
       break;
       case 0x65:  //LOAD I - Load n number of registers from memory[index]
         location = this->Index;
         for(uint8_t i = 0; i <= High & 0xF; ++i)
         {
-          this->Register[i] = this->ReadMemory(target + i);
+          this->Register[i] = this->ReadMemory(byteX + i);
         }
       break;
       case 0x75:  //SRPL - Move N registers to temp
-        for(uint8_t i = 0; i <= target; ++i)
+        for(uint8_t i = 0; i <= byteX; ++i)
         {
           this->RegisterTemp[i] = this->Register[i];
         }
       break;
       case 0x85:  //LRPL - Move N temp registers to main
-        for(uint8_t i = 0; i <= target; ++i)
+        for(uint8_t i = 0; i <= byteX; ++i)
         {
           this->Register[i] = this->RegisterTemp[i];
         }
