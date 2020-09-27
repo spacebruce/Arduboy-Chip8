@@ -343,10 +343,23 @@ void Chip8::Load(const uint8_t * Rom, const size_t RomSize)
   this->Reset();
 }
 
+void Chip8::Tick(Arduboy2 & System)
+{
+    if(this->Mode != CPUMode::Running)
+      return;
+
+    ExecuteInstruction(System);
+}
+
 void Chip8::Tick(Arduboy2 & System, uint8_t Repeat)
 {
   for(auto i = 0; i < Repeat; ++i)
+  {
+    if(this->Mode != CPUMode::Running)
+      return;
+
     ExecuteInstruction(System);
+  }
 }
 
 void Chip8::Halt(void)
