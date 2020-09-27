@@ -115,8 +115,8 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
   case 0xA0:  //LOAD - load index reg with data
     this->Index = Opcode & 0x0FFF;
   break;
-  case 0xB0:  //JUMP + i - PC goes moved to Index + operand const
-    this->ProgramCounter = (this->ReadMemory(this->Register[0]) << 8) + (this->ReadMemory(this->Register[0]+1)) + Opcode & 0x0FFF;
+  case 0xB0:  //JUMP + i - PC goes moved to immediate address + V0
+    this->ProgramCounter = (Opcode & 0x0FFF) + this->Register[0];
   break;
   case 0xC0:  //RAND - generated random number &'d with low byte, store in selected register
     this->Register[byteX] = random(255) & Low;
