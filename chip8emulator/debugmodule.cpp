@@ -229,6 +229,11 @@ void DebugModule::DrawStackView(Arduboy2 & System)
 
 void DebugModule::DrawInputView(Arduboy2 & System)
 {
+  System.setCursor(65, 0);
+  System.print(F("INPUT MODE"));
+  System.setCursor(65, 8);
+  System.print(F("REG : "));
+  System.print(Emulator->InputRegister, HEX);
   for(uint8_t i = 0; i <= 0xF; ++i)
   {
     const uint8_t Row = (i >= 0x8) ? 48 : 40;
