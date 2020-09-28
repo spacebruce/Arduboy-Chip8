@@ -417,7 +417,7 @@ void Chip8Emulator::Tick(Arduboy2 & System)
     if(this->InputPressed)  //If key pressed this frame
     {
       this->Register[this->InputRegister] == this->InputLast;
-      this->Mode == CPUMode::Running;
+      this->Mode = CPUMode::Running;
     }
   }
   if(this->Mode != CPUMode::Running)
