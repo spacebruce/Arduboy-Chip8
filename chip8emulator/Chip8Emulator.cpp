@@ -413,6 +413,7 @@ void Chip8Emulator::Tick(Arduboy2 & System)
   {
     if(this->InputPressed)  //If key pressed this frame
     {
+      System.clear();
       this->Register[this->InputRegister] == this->InputLast;
       this->Mode == CPUMode::Running;
     }

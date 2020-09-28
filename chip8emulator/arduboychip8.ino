@@ -29,22 +29,16 @@ void loop()
     return;
   System.pollButtons();
 
-  #if DEBUG_MODE
-    Debug.PreTick();
-  #endif
-
   Chip8.UpdateDelayTimer();
   Chip8.UpdateSoundTimer();
   Chip8.UpdateInput();
 
-  //if(System.justPressed(A_BUTTON))
-  Chip8.Tick(System);
-  //if(System.pressed(B_BUTTON))
-  //  Chip8.Tick(System);
-
   #if DEBUG_MODE
+    Debug.PreTick();
     Debug.Tick(System);
     Debug.Draw(System);
   #endif
+
+  Chip8.Tick(System, 10);
   System.display();
 }

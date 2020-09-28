@@ -28,7 +28,6 @@ private:
 
 public:
   DebugModule(Chip8Emulator & Emulator);
-  void PreTick();
   void Tick(Arduboy2 & System);
   void Draw(Arduboy2 & System);
 

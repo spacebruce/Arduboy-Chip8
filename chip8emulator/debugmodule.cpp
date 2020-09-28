@@ -5,14 +5,11 @@ DebugModule::DebugModule(Chip8Emulator & Emulator)
   this->Emulator = &Emulator;
 }
 
-void DebugModule::PreTick()
+void DebugModule::Tick(Arduboy2 & System)
 {
   size_t Address = Emulator->ProgramCounter;
   CurrentOpcode = (Emulator->ReadMemory(Address) << 8) + Emulator->ReadMemory(Address + 1);
-}
 
-void DebugModule::Tick(Arduboy2 & System)
-{
   if(System.justPressed(LEFT_BUTTON))
   {
     this->ViewMode = static_cast<DebugScreenView>((static_cast<uint8_t>(this->ViewMode) - 1) % static_cast<uint8_t>(DebugScreenView::Sizeof));
