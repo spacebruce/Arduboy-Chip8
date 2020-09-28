@@ -2,3 +2,4 @@
 
 #define SERIAL_DEBUG true
 #define SMALL_MEMORY true
+#define DEBUG_MODE true

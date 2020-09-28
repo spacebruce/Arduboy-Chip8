@@ -8,7 +8,9 @@
 Arduboy2 System;
 
 Chip8 Chip8;
-DebugModule Debug = DebugModule(Chip8);
+#if DEBUG_MODE
+  DebugModule Debug = DebugModule(Chip8);
+#endif
 
 void setup()
 {
@@ -18,7 +20,7 @@ void setup()
 
   BeepPin1::begin();
 
-#ifdef SERIAL_DEBUG
+#if SERIAL_DEBUG
   Serial.begin(9600);
 #endif
   Chip8.Load(TestRom);
@@ -30,17 +32,21 @@ void loop()
     return;
   System.pollButtons();
 
-  Debug.PreTick();
+  #if DEBUG_MODE
+    Debug.PreTick();
+  #endif
 
   Chip8.UpdateDelayTimer();
   Chip8.UpdateSoundTimer();
-  
+
   if(System.justPressed(A_BUTTON))
     Chip8.Tick(System, 1);
   if(System.pressed(B_BUTTON))
     Chip8.Tick(System);
 
-  Debug.Tick(System);
-  Debug.Draw(System);
+  #if DEBUG_MODE
+    Debug.Tick(System);
+    Debug.Draw(System);
+  #endif
   System.display();
 }
