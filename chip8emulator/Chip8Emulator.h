@@ -9,7 +9,7 @@
 
 enum class CPUMode : uint8_t
 {
-  Startup, Running, Stopped, Error
+  Startup, Running, InputWait, Stopped, Error
 };
 
 enum class CPUError : uint8_t
@@ -32,12 +32,12 @@ enum class MemoryPartition : uint8_t
   Void, Static, ROM, RAM,
 };
 
-class Chip8
+class Chip8Emulator
 {
   friend class DebugModule;
 public:
 #if SMALL_MEMORY
-  static constexpr size_t MemorySize = 1024;
+  static constexpr size_t MemorySize = SMALL_MEMORY_ALLOCATED;
 #else
   static constexpr size_t MemorySize = 4096;
 #endif
@@ -62,6 +62,11 @@ public:
   uint16_t ProgramCounter = 0;
   uint16_t DelayTimer = 0;
   uint16_t SoundTimer = 0;
+///Input
+  uint8_t InputRegister = 0x0;  //For wait for input instruction
+  uint8_t InputPressed = false; //Has user pressed key recently?
+  uint8_t InputLast = 0x00;     //Last pressed key id
+  uint8_t InputBuffer[16];      //State of all keys
 //Debug
   CPUMode Mode = CPUMode::Startup;
   CPUError ErrorType = CPUError::None;
@@ -76,12 +81,12 @@ public:
   void Error(CPUError ErrorType, uint16_t ErrorData = 0);
 
 public:
-  Chip8() = default;
-  Chip8(const uint8_t * Rom, const size_t RomSize);
+  Chip8Emulator() = default;
+  Chip8Emulator(const uint8_t * Rom, const size_t RomSize);
 
   template<size_t size>
-  Chip8(const uint8_t (&rom)[size]) :
-    Chip8(rom, size)
+  Chip8Emulator(const uint8_t (&rom)[size]) :
+    Chip8Emulator(rom, size)
   {
   }
 
@@ -91,10 +96,12 @@ public:
   void Tick(Arduboy2 & System, uint8_t Repeat);
   void UpdateDelayTimer();
   void UpdateSoundTimer();
+  void UpdateInput();
   void Halt(void);
+  void SendInput(const uint8_t KeyID);
 
   template<size_t size>
- void Load(const uint8_t (&rom)[size])
+  void Load(const uint8_t (&rom)[size])
   {
     this->Load(rom, size);
   }

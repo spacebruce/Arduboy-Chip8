@@ -1,14 +1,16 @@
 #include <Arduboy2.h>
 #include <arduino.h>
 #include "testrom.h"
-#include "chip8.h"
+#include "Chip8Emulator.h"
 #include "debugmodule.h"
 #include "config.h"
 
 Arduboy2 System;
 
-Chip8 Chip8;
-DebugModule Debug = DebugModule(Chip8);
+Chip8Emulator Chip8;
+#if DEBUG_MODE
+  DebugModule Debug = DebugModule(Chip8);
+#endif
 
 void setup()
 {
@@ -18,9 +20,6 @@ void setup()
 
   BeepPin1::begin();
 
-#ifdef SERIAL_DEBUG
-  Serial.begin(9600);
-#endif
   Chip8.Load(TestRom);
 }
 
@@ -30,17 +29,15 @@ void loop()
     return;
   System.pollButtons();
 
-  Debug.PreTick();
-
   Chip8.UpdateDelayTimer();
   Chip8.UpdateSoundTimer();
-  
-  if(System.justPressed(A_BUTTON))
-    Chip8.Tick(System, 1);
-  if(System.pressed(B_BUTTON))
-    Chip8.Tick(System);
+  Chip8.UpdateInput();
 
-  Debug.Tick(System);
-  Debug.Draw(System);
+  #if DEBUG_MODE
+    Debug.Tick(System);
+    Debug.Draw(System);
+  #endif
+
+  Chip8.Tick(System, 50);
   System.display();
 }

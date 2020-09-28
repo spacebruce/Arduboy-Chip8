@@ -1,18 +1,15 @@
 #include "debugmodule.h"
 
-DebugModule::DebugModule(Chip8 & Emulator)
+DebugModule::DebugModule(Chip8Emulator & Emulator)
 {
   this->Emulator = &Emulator;
 }
 
-void DebugModule::PreTick()
+void DebugModule::Tick(Arduboy2 & System)
 {
   size_t Address = Emulator->ProgramCounter;
   CurrentOpcode = (Emulator->ReadMemory(Address) << 8) + Emulator->ReadMemory(Address + 1);
-}
 
-void DebugModule::Tick(Arduboy2 & System)
-{
   if(System.justPressed(LEFT_BUTTON))
   {
     this->ViewMode = static_cast<DebugScreenView>((static_cast<uint8_t>(this->ViewMode) - 1) % static_cast<uint8_t>(DebugScreenView::Sizeof));
@@ -51,10 +48,13 @@ void DebugModule::Tick(Arduboy2 & System)
           if(this->InputSelected == 0xFF)
             this->InputSelected = 0x0F;
         }
-
         if(System.justPressed(DOWN_BUTTON))
         {
           this->InputSelected = (this->InputSelected + 1) % 0x10;
+        }
+        if(System.justPressed(A_BUTTON))
+        {
+          Emulator->SendInput(this->InputSelected);
         }
       }
       break;
@@ -89,6 +89,8 @@ void DebugModule::Draw(Arduboy2 & System)
       break;
   }
 
+  //Status message
+  System.setCursor(0,56);
   switch(Emulator->Mode)
   {
     case CPUMode::Error:
@@ -101,6 +103,10 @@ void DebugModule::Draw(Arduboy2 & System)
 
     case CPUMode::Startup:
       System.print(F("CPU STARTUP"));
+      break;
+
+    case CPUMode::InputWait:
+      System.print(F("WAITING FOR INPUT"));
       break;
   }
 }
@@ -212,42 +218,35 @@ void DebugModule::DrawStackView(Arduboy2 & System)
   System.print(F("SP"));
   System.print(Emulator->StackPointer);
 
-  for(uint8_t i = 0; i < Chip8::StackSize / 2; ++i)
+  for(uint8_t i = 0; i < Chip8Emulator::StackSize; ++i)
   {
-    const uint8_t High = ((Emulator->Stack[i] >> 8) & 0xFF);
-    const uint8_t Low = ((Emulator->Stack[i] >> 0) & 0xFF);
-
-    const int16_t X = (i * 16);
-
-    System.setCursor(X, 40);
-    System.print(High, HEX);
-
-    System.setCursor(X, 48);
-    System.print(Low, HEX);
+    const uint8_t Row = (i >= Chip8Emulator::StackSize / 2) ? 48 : 40;
+    const int16_t X = (i % ((Chip8Emulator::StackSize / 2) - 1) * 16);
+    System.setCursor(X, Row);
+    System.print(Emulator->Stack[i], HEX);
   }
 }
 
 void DebugModule::DrawInputView(Arduboy2 & System)
 {
-  for(uint8_t i = 0; i < 8; ++i)
+  System.setCursor(65, 0);
+  System.print(F("INPUT MODE"));
+  System.setCursor(65, 8);
+  System.print(F("REG : "));
+  System.print(Emulator->InputRegister, HEX);
+  for(uint8_t i = 0; i <= 0xF; ++i)
   {
-    const uint8_t High = i;
-    const uint8_t Low = i + 8;
-    const int16_t X = (i * 16) + 8;
-
-    System.setCursor(X, 40);
-    System.print(High, HEX);
-    System.setCursor(X, 48);
-    System.print(Low, HEX);
+    const uint8_t Row = (i >= 0x8) ? 48 : 40;
+    const int16_t X = (i % (0x8) * 16);
+    System.setCursor(X, Row);
+    System.print(i, HEX);
+    if(this->InputSelected == i)
+      System.print(F("<"));
   }
-
-  System.setCursor((this->InputSelected % 8) * 16, 40 + (this->InputSelected >= 8) * 8);
-  System.print(F(">"));
 }
 
 void DebugModule::DrawError(Arduboy2 & System)
 {
-    System.setCursor(0,56);
     System.print(F("ERR - "));
 
     switch(Emulator->ErrorType)

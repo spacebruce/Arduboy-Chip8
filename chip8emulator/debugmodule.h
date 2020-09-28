@@ -3,7 +3,7 @@
 #include <stddef.h>
 #include <Arduboy2.h>
 #include "config.h"
-#include "chip8.h"
+#include "Chip8Emulator.h"
 
 enum class DebugScreenView : uint8_t
 {
@@ -19,7 +19,7 @@ enum class DebugScreenView : uint8_t
 class DebugModule
 {
 private:
-  Chip8 * Emulator;
+  Chip8Emulator * Emulator;
   size_t Scroll = 0x200;
   uint16_t CurrentOpcode = 0x0000;
   DebugScreenView ViewMode = DebugScreenView::Memory8;
@@ -27,8 +27,7 @@ private:
   uint8_t InputSelected = 0;
 
 public:
-  DebugModule(Chip8 & Emulator);
-  void PreTick();
+  DebugModule(Chip8Emulator & Emulator);
   void Tick(Arduboy2 & System);
   void Draw(Arduboy2 & System);
 
