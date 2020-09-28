@@ -75,7 +75,11 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
         this->Register[byteX] ^= this->Register[byteY];
       return;
       case 0x4: //ADD
-        this->Register[byteX] += this->Register[byteY];
+      {
+        uint16_t result = (this->Register[byteX] + this->Register[byteY]);
+        this->Register[0xF] = (result > 0xFF) ? 1 : 0;
+        this->Register[byteX] = (result & 0xFF);
+      }
       return;
       case 0x5: //SUB - Subtract byteY from byteX, if borrow store 0 in reg 0xF
         this->Register[0xF] = this->Register[byteX] > this->Register[byteY];
