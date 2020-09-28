@@ -212,18 +212,15 @@ void DebugModule::DrawStackView(Arduboy2 & System)
   System.print(F("SP"));
   System.print(Emulator->StackPointer);
 
-  for(uint8_t i = 0; i < Chip8Emulator::StackSize / 2; ++i)
+  uint8_t Row = 40;
+  for(uint8_t i = 0; i < Chip8Emulator::StackSize; ++i)
   {
-    const uint8_t High = ((Emulator->Stack[i] >> 8) & 0xFF);
-    const uint8_t Low = ((Emulator->Stack[i] >> 0) & 0xFF);
+    const int16_t X = (i % ((Chip8Emulator::StackSize / 2) - 1) * 16);
+    System.setCursor(X, Row);
+    System.print(Emulator->Stack[i], HEX);
 
-    const int16_t X = (i * 16);
-
-    System.setCursor(X, 40);
-    System.print(High, HEX);
-
-    System.setCursor(X, 48);
-    System.print(Low, HEX);
+    if(i >= Chip8Emulator::StackSize / 2)
+      Row = 48;
   }
 }
 
