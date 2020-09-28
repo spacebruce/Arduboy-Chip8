@@ -413,7 +413,6 @@ void Chip8Emulator::Tick(Arduboy2 & System)
   {
     if(this->InputPressed)  //If key pressed this frame
     {
-      System.clear();
       this->Register[this->InputRegister] == this->InputLast;
       this->Mode == CPUMode::Running;
     }
@@ -436,6 +435,7 @@ void Chip8Emulator::SendInput(const uint8_t KeyID)
 {
   this->InputPressed = true;
   this->InputLast = KeyID;
+  this->InputBuffer[KeyID] = true;
 }
 
 void Chip8Emulator::UpdateDelayTimer()
@@ -455,7 +455,10 @@ void Chip8Emulator::UpdateSoundTimer()
 
 void Chip8Emulator::UpdateInput()
 {
+  //clear key state
   this->InputPressed = false;
+  for(uint8_t i = 0; i < 16; ++i)
+    this->InputBuffer[i] = false;
 }
 
 void Chip8Emulator::Halt(void)
