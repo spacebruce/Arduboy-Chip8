@@ -139,32 +139,40 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
 
     case 0xD:
       {
-        /*  DXXX
-          D - sprite draw
-          X - X position register
-          X - Y position register
-          X - Sprite height
-        */
-        uint8_t x = this->Register[byteX];//this->Register[High & 0x0F];
-        uint8_t y = this->Register[byteY];//this->Register[(Low & 0xF0) >> 4];
-        uint8_t height = (Low & 0x0F);
-        this->Register[0xF] = 0;  //Collision register
-        for(uint8_t drawY = 0; drawY < height; ++drawY)
+        // DXYN
+        // D - sprite draw
+        // X - X position register
+        // Y - Y position register
+        // N - Sprite height
+
+        const uint8_t x = this->Register[byteX];
+        const uint8_t y = this->Register[byteY];
+
+        const uint8_t height = (Low & 0x0F);
+        uint8_t collision = 0;
+
+        for(uint8_t yIndex = 0; yIndex < height; ++yIndex)
         {
-          uint8_t screenY = (y + drawY) % 32;
-          uint8_t sprite = this->ReadMemory(this->Index + drawY);
-          for(uint8_t drawX = 0; drawX < 8; ++drawX)
+          const uint8_t drawY = (y + yIndex) % 32;
+          const uint8_t spriteData = this->ReadMemory(this->Index + yIndex);
+
+          for(uint8_t xIndex = 0; xIndex < 8; ++xIndex)
           {
-            if((sprite >> drawX) & 0x1) //If current pixel in sprite is on
-            {
-              uint8_t screenX = (x + (7 - drawX)) % 64;
-              bool enabled = System.getPixel(screenX, screenY);
-              if (enabled) //If surface pixel is on
-                this->Register[0xF] = 1; //Collision on
-              System.drawPixel(screenX, screenY, !enabled);  //invert drawn pixel
-            }
+            // Skip pixels with a value of 0
+            if(((spriteData >> xIndex) & 0x1) == 0)
+              continue;
+
+            const int8_t drawX = (x + (7 - xIndex)) % 64;
+            const uint8_t pixel = System.getPixel(drawX, drawY);
+
+            if (pixel != 0) //If surface pixel is on
+              collision = 1; //Collision on
+
+            System.drawPixel(drawX, drawY, ~pixel);  //invert drawn pixel
           }
         }
+
+        this->Register[0xF] = collision;
       }
       return;
 
