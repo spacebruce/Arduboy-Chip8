@@ -51,10 +51,13 @@ void DebugModule::Tick(Arduboy2 & System)
           if(this->InputSelected == 0xFF)
             this->InputSelected = 0x0F;
         }
-
         if(System.justPressed(DOWN_BUTTON))
         {
           this->InputSelected = (this->InputSelected + 1) % 0x10;
+        }
+        if(System.justPressed(A_BUTTON))
+        {
+          Emulator->SendInput(this->InputSelected);
         }
       }
       break;
@@ -101,6 +104,10 @@ void DebugModule::Draw(Arduboy2 & System)
 
     case CPUMode::Startup:
       System.print(F("CPU STARTUP"));
+      break;
+
+    case CPUMode::InputWait:
+      System.print(F("WAITING FOR INPUT"));
       break;
   }
 }
