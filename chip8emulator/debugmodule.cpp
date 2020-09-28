@@ -92,6 +92,8 @@ void DebugModule::Draw(Arduboy2 & System)
       break;
   }
 
+  //Status message
+  System.setCursor(0,56);
   switch(Emulator->Mode)
   {
     case CPUMode::Error:
@@ -243,7 +245,6 @@ void DebugModule::DrawInputView(Arduboy2 & System)
 
 void DebugModule::DrawError(Arduboy2 & System)
 {
-    System.setCursor(0,56);
     System.print(F("ERR - "));
 
     switch(Emulator->ErrorType)
