@@ -20,9 +20,6 @@ void setup()
 
   BeepPin1::begin();
 
-#if SERIAL_DEBUG
-  Serial.begin(9600);
-#endif
   Chip8.Load(TestRom);
 }
 

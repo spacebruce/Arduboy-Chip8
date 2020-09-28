@@ -447,7 +447,6 @@ void Chip8::Halt(void)
 }
 void Chip8::Reset(void)
 {
-  Serial.println(F("Reset CPU..."));
   //bootup
   for(size_t i = 0; i < 16; ++i)
   {
