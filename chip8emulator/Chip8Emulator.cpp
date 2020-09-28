@@ -180,10 +180,13 @@ void Chip8Emulator::ExecuteInstruction(Arduboy2 & System)
     case 0xE:  //Input stuff
       switch(lowByte)
       {
-        case 0x9E:
+        case 0x9E:  //If X pressed == true
+          if ((this->InputPressed) && (this->InputBuffer[this->Register[operandX]]))
+            this->ProgramCounter += 2;
           return;
-
-        case 0xA1:
+        case 0xA1:  //If X pressed == false
+          if ((this->InputPressed) && (this->InputBuffer[this->Register[operandX]]))
+            this->ProgramCounter += 2;
           return;
       }
       break;
