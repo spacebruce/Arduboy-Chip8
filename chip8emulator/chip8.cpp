@@ -134,7 +134,7 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
       return;
 
     case 0xC:  //RAND - generated random number &'d with low byte, store in selected register
-      this->Register[byteX] = random(255) & Low;
+      this->Register[byteX] = rand() & Low;
       return;
 
     case 0xD:
