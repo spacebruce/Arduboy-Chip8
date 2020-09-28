@@ -34,7 +34,6 @@ void loop()
   Chip8.UpdateInput();
 
   #if DEBUG_MODE
-    Debug.PreTick();
     Debug.Tick(System);
     Debug.Draw(System);
   #endif
