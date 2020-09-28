@@ -38,6 +38,6 @@ void loop()
     Debug.Draw(System);
   #endif
 
-  Chip8.Tick(System, 10);
+  Chip8.Tick(System, 50);
   System.display();
 }
