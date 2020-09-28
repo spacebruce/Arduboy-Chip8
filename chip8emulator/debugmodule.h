@@ -25,9 +25,19 @@ private:
   DebugScreenView ViewMode = DebugScreenView::Memory8;
   uint8_t Input[16];
   uint8_t InputSelected = 0;
+
 public:
   DebugModule(Chip8 & Emulator);
   void PreTick();
   void Tick(Arduboy2 & System);
   void Draw(Arduboy2 & System);
+
+private:
+  void ClearDebugArea();
+  void DrawMemory8View(Arduboy2 & System);
+  void DrawMemory16View(Arduboy2 & System);
+  void DrawProcessorView(Arduboy2 & System);
+  void DrawStackView(Arduboy2 & System);
+  void DrawInputView(Arduboy2 & System);
+  void DrawError(Arduboy2 & System);
 };
