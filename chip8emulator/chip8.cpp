@@ -224,9 +224,15 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
           return;
 
         case 0x33:  //BCD
-          this->WriteMemory(this->Index + 0, (this->Register[operandX]) / 100);
-          this->WriteMemory(this->Index + 1, (this->Register[operandX] % 100) / 10);
-          this->WriteMemory(this->Index + 2, (this->Register[operandX]) % 10);
+          {
+            uint8_t value = this->Register[operandX];
+
+            for(uint8_t offset = 3; offset > 0; --offset, value /= 10)
+            {
+              const uint8_t digit = (value % 10);
+              this->WriteMemory(this->Index + (offset - 1), digit);
+            }
+          }
           return;
 
         case 0x55:  //STORE I - Store n registers into memory[index]
