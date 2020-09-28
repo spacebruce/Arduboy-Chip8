@@ -35,6 +35,7 @@ void loop()
 
   Chip8.UpdateDelayTimer();
   Chip8.UpdateSoundTimer();
+  Chip8.UpdateInput();
 
   if(System.justPressed(A_BUTTON))
     Chip8.Tick(System, 1);

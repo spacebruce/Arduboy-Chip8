@@ -9,7 +9,7 @@
 
 enum class CPUMode : uint8_t
 {
-  Startup, Running, Stopped, Error
+  Startup, Running, InputWait, Stopped, Error
 };
 
 enum class CPUError : uint8_t
@@ -62,6 +62,10 @@ public:
   uint16_t ProgramCounter = 0;
   uint16_t DelayTimer = 0;
   uint16_t SoundTimer = 0;
+///Input
+  uint8_t InputRegister = 0x0;  //For wait for input instruction
+  uint8_t InputPressed = false; //Has user pressed key recently?
+  uint8_t InputLast = 0x00;     //Last pressed key id
 //Debug
   CPUMode Mode = CPUMode::Startup;
   CPUError ErrorType = CPUError::None;
@@ -91,10 +95,12 @@ public:
   void Tick(Arduboy2 & System, uint8_t Repeat);
   void UpdateDelayTimer();
   void UpdateSoundTimer();
+  void UpdateInput();
   void Halt(void);
+  void SendInput(const uint8_t KeyID);
 
   template<size_t size>
- void Load(const uint8_t (&rom)[size])
+  void Load(const uint8_t (&rom)[size])
   {
     this->Load(rom, size);
   }

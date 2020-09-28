@@ -196,8 +196,8 @@ void Chip8Emulator::ExecuteInstruction(Arduboy2 & System)
           return;
 
         case 0x0A:  //KEYD - Pause until key pressed
-          //to do
-          this->Register[operandX] = 0;
+          this->Mode = CPUMode::InputWait;
+          this->InputRegister = operandX;
           return;
 
         case 0x15:  //Store delay - register -> timer
@@ -409,21 +409,32 @@ void Chip8Emulator::Load(const uint8_t * Rom, const size_t RomSize)
 
 void Chip8Emulator::Tick(Arduboy2 & System)
 {
-    if(this->Mode != CPUMode::Running)
-      return;
+  if(this->Mode == CPUMode::InputWait)
+  {
+    if(this->InputPressed)  //If key pressed this frame
+    {
+      this->Register[this->InputRegister] == this->InputLast;
+      this->Mode == CPUMode::Running;
+    }
+  }
+  if(this->Mode != CPUMode::Running)
+    return;
 
-    ExecuteInstruction(System);
+  ExecuteInstruction(System);
 }
 
 void Chip8Emulator::Tick(Arduboy2 & System, uint8_t Repeat)
 {
   for(auto i = 0; i < Repeat; ++i)
   {
-    if(this->Mode != CPUMode::Running)
-      return;
-
-    ExecuteInstruction(System);
+    this->Tick(System);
   }
+}
+
+void Chip8Emulator::SendInput(const uint8_t KeyID)
+{
+  this->InputPressed = true;
+  this->InputLast = KeyID;
 }
 
 void Chip8Emulator::UpdateDelayTimer()
@@ -439,6 +450,11 @@ void Chip8Emulator::UpdateSoundTimer()
 
   if(this->SoundTimer == 0)
     BeepPin1::noTone();
+}
+
+void Chip8Emulator::UpdateInput()
+{
+  this->InputPressed = false;
 }
 
 void Chip8Emulator::Halt(void)
