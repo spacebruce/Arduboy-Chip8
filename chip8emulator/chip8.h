@@ -37,7 +37,7 @@ class Chip8
   friend class DebugModule;
 public:
 #if SMALL_MEMORY
-  static constexpr size_t MemorySize = 1024;
+  static constexpr size_t MemorySize = SMALL_MEMORY_ALLOCATED;
 #else
   static constexpr size_t MemorySize = 4096;
 #endif
