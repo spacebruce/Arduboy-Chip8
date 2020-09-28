@@ -212,34 +212,26 @@ void DebugModule::DrawStackView(Arduboy2 & System)
   System.print(F("SP"));
   System.print(Emulator->StackPointer);
 
-  uint8_t Row = 40;
   for(uint8_t i = 0; i < Chip8Emulator::StackSize; ++i)
   {
+    const uint8_t Row = (i >= Chip8Emulator::StackSize / 2) ? 48 : 40;
     const int16_t X = (i % ((Chip8Emulator::StackSize / 2) - 1) * 16);
     System.setCursor(X, Row);
     System.print(Emulator->Stack[i], HEX);
-
-    if(i >= Chip8Emulator::StackSize / 2)
-      Row = 48;
   }
 }
 
 void DebugModule::DrawInputView(Arduboy2 & System)
 {
-  for(uint8_t i = 0; i < 8; ++i)
+  for(uint8_t i = 0; i <= 0xF; ++i)
   {
-    const uint8_t High = i;
-    const uint8_t Low = i + 8;
-    const int16_t X = (i * 16) + 8;
-
-    System.setCursor(X, 40);
-    System.print(High, HEX);
-    System.setCursor(X, 48);
-    System.print(Low, HEX);
+    const uint8_t Row = (i >= 0x8) ? 48 : 40;
+    const int16_t X = (i % (0x8) * 16);
+    System.setCursor(X, Row);
+    System.print(i, HEX);
+    if(this->InputSelected == i)
+      System.print(F("<"));
   }
-
-  System.setCursor((this->InputSelected % 8) * 16, 40 + (this->InputSelected >= 8) * 8);
-  System.print(F(">"));
 }
 
 void DebugModule::DrawError(Arduboy2 & System)
