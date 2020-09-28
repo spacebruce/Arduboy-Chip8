@@ -2,6 +2,7 @@
 #include <arduino.h>
 #include "testrom.h"
 #include "Chip8Emulator.h"
+#include "Chip8Input.h"
 #include "debugmodule.h"
 #include "config.h"
 
@@ -10,6 +11,8 @@ Arduboy2 System;
 Chip8Emulator Chip8;
 #if DEBUG_MODE
   DebugModule Debug = DebugModule(Chip8);
+#else
+  Chip8Input Input = Chip8Input(Chip8);
 #endif
 
 void setup()
@@ -36,6 +39,8 @@ void loop()
   #if DEBUG_MODE
     Debug.Tick(System);
     Debug.Draw(System);
+  #else
+    Input.Tick(System);
   #endif
 
   Chip8.Tick(System, 50);
