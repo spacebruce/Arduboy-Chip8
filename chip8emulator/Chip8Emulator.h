@@ -32,7 +32,7 @@ enum class MemoryPartition : uint8_t
   Void, Static, ROM, RAM,
 };
 
-class Chip8
+class Chip8Emulator
 {
   friend class DebugModule;
 public:
@@ -76,12 +76,12 @@ public:
   void Error(CPUError ErrorType, uint16_t ErrorData = 0);
 
 public:
-  Chip8() = default;
-  Chip8(const uint8_t * Rom, const size_t RomSize);
+  Chip8Emulator() = default;
+  Chip8Emulator(const uint8_t * Rom, const size_t RomSize);
 
   template<size_t size>
-  Chip8(const uint8_t (&rom)[size]) :
-    Chip8(rom, size)
+  Chip8Emulator(const uint8_t (&rom)[size]) :
+    Chip8Emulator(rom, size)
   {
   }
 

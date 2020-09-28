@@ -1,6 +1,6 @@
-#include "chip8.h"
+#include "Chip8Emulator.h"
 
-void Chip8::ExecuteInstruction(Arduboy2 & System)
+void Chip8Emulator::ExecuteInstruction(Arduboy2 & System)
 {
   const uint8_t highByte = this->ReadMemory(this->ProgramCounter + 0);
   const uint8_t lowByte = this->ReadMemory(this->ProgramCounter + 1);
@@ -209,7 +209,7 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
             this->SoundTimer = this->Register[operandX];
 
             if(this->SoundTimer > 0)
-              BeepPin1::tone(BeepPin1::freq(Chip8::SoundFrequency));
+              BeepPin1::tone(BeepPin1::freq(Chip8Emulator::SoundFrequency));
             else
               BeepPin1::noTone();
           }
@@ -269,7 +269,7 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
   this->Error(CPUError::UnknownOpcode, instruction);
 }
 
-MemoryPartition Chip8::GetMemoryPartition(const size_t Location) const
+MemoryPartition Chip8Emulator::GetMemoryPartition(const size_t Location) const
 {
   if(Location < this->RomStart) //empty space
   {
@@ -285,7 +285,7 @@ MemoryPartition Chip8::GetMemoryPartition(const size_t Location) const
   }
 }
 
-uint8_t Chip8::ReadMemory(const size_t Location)
+uint8_t Chip8Emulator::ReadMemory(const size_t Location)
 {
 #if SMALL_MEMORY
   // Font Space
@@ -327,7 +327,7 @@ uint8_t Chip8::ReadMemory(const size_t Location)
 #endif
 }
 
-void Chip8::WriteMemory(const size_t Location, const uint8_t Value)
+void Chip8Emulator::WriteMemory(const size_t Location, const uint8_t Value)
 {
 #if SMALL_MEMORY
 
@@ -361,7 +361,7 @@ void Chip8::WriteMemory(const size_t Location, const uint8_t Value)
 #endif
 }
 
-void Chip8::PushWord(const uint16_t Word)
+void Chip8Emulator::PushWord(const uint16_t Word)
 {
   if(this->StackPointer >= this->StackSize)
   {
@@ -373,7 +373,7 @@ void Chip8::PushWord(const uint16_t Word)
   ++this->StackPointer;
 }
 
-uint16_t Chip8::PullWord()
+uint16_t Chip8Emulator::PullWord()
 {
   if(this->StackPointer == this->StackStart)
   {
@@ -385,19 +385,19 @@ uint16_t Chip8::PullWord()
   return this->Stack[this->StackPointer];
 }
 
-void Chip8::Error(CPUError ErrorType, uint16_t ErrorData)
+void Chip8Emulator::Error(CPUError ErrorType, uint16_t ErrorData)
 {
   this->Mode = CPUMode::Error;
   this->ErrorType = ErrorType;
   this->ErrorData = ErrorData;
 }
 
-Chip8::Chip8(const uint8_t * Rom, const size_t RomSize)
+Chip8Emulator::Chip8Emulator(const uint8_t * Rom, const size_t RomSize)
 {
   this->Load(Rom, RomSize);
 }
 
-void Chip8::Load(const uint8_t * Rom, const size_t RomSize)
+void Chip8Emulator::Load(const uint8_t * Rom, const size_t RomSize)
 {
   //Configure rom
   this->Rom = Rom;
@@ -407,7 +407,7 @@ void Chip8::Load(const uint8_t * Rom, const size_t RomSize)
   this->Reset();
 }
 
-void Chip8::Tick(Arduboy2 & System)
+void Chip8Emulator::Tick(Arduboy2 & System)
 {
     if(this->Mode != CPUMode::Running)
       return;
@@ -415,7 +415,7 @@ void Chip8::Tick(Arduboy2 & System)
     ExecuteInstruction(System);
 }
 
-void Chip8::Tick(Arduboy2 & System, uint8_t Repeat)
+void Chip8Emulator::Tick(Arduboy2 & System, uint8_t Repeat)
 {
   for(auto i = 0; i < Repeat; ++i)
   {
@@ -426,13 +426,13 @@ void Chip8::Tick(Arduboy2 & System, uint8_t Repeat)
   }
 }
 
-void Chip8::UpdateDelayTimer()
+void Chip8Emulator::UpdateDelayTimer()
 {
   if(this->DelayTimer > 0)
     --this->DelayTimer;
 }
 
-void Chip8::UpdateSoundTimer()
+void Chip8Emulator::UpdateSoundTimer()
 {
   if(this->SoundTimer > 0)
     --this->SoundTimer;
@@ -441,11 +441,11 @@ void Chip8::UpdateSoundTimer()
     BeepPin1::noTone();
 }
 
-void Chip8::Halt(void)
+void Chip8Emulator::Halt(void)
 {
   this->Mode = CPUMode::Stopped;
 }
-void Chip8::Reset(void)
+void Chip8Emulator::Reset(void)
 {
   //bootup
   for(size_t i = 0; i < 16; ++i)
