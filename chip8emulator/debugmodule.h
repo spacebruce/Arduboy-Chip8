@@ -33,6 +33,7 @@ public:
   void Draw(Arduboy2 & System);
 
 private:
+  void ClearDebugArea();
   void DrawMemory8View(Arduboy2 & System);
   void DrawMemory16View(Arduboy2 & System);
   void DrawProcessorView(Arduboy2 & System);

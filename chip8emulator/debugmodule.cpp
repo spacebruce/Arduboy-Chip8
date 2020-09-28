@@ -63,13 +63,7 @@ void DebugModule::Tick(Arduboy2 & System)
 
 void DebugModule::Draw(Arduboy2 & System)
 {
-  // Clear out screen behind debug gui
-  uint8_t height  = 32;
-  for(uint8_t i = 0; i < 128; ++i)
-  {
-    if(i > 64)  height = 0;
-    System.drawFastVLine(i,height,64 - height,BLACK);
-  }
+  this->ClearDebugArea();
 
   // Memory viewer
   switch(this->ViewMode)
@@ -109,6 +103,30 @@ void DebugModule::Draw(Arduboy2 & System)
       System.print(F("CPU STARTUP"));
       break;
   }
+}
+
+void DebugModule::ClearDebugArea()
+{
+  constexpr size_t screenWidth = WIDTH;
+  constexpr size_t screenHeight = HEIGHT;
+  constexpr size_t halfScreenWidth = (screenWidth / 2);
+  constexpr size_t halfScreenHeight = (screenHeight / 2);
+
+  constexpr size_t columnHeight = 8;
+  constexpr size_t halfVerticalColumns = (halfScreenHeight / columnHeight);
+
+  for(size_t y = 0; y < halfVerticalColumns; ++y)
+    for(size_t x = 0; x < halfScreenWidth; ++x)
+    {
+      const size_t index = ((y * screenWidth) + x);
+      Arduboy2::sBuffer[halfScreenWidth + index] = 0;
+    }
+
+  constexpr size_t screenSize = ((screenWidth * screenHeight) / 8);
+  constexpr size_t halfScreenSize = (screenSize / 2);
+
+  for(size_t index = 0; index < halfScreenSize; ++index)
+    Arduboy2::sBuffer[halfScreenSize + index] = 0;
 }
 
 void DebugModule::DrawMemory8View(Arduboy2 & System)
