@@ -37,10 +37,10 @@ void loop()
   Chip8.UpdateSoundTimer();
   Chip8.UpdateInput();
 
-  if(System.justPressed(A_BUTTON))
-    Chip8.Tick(System, 1);
-  if(System.pressed(B_BUTTON))
-    Chip8.Tick(System);
+  //if(System.justPressed(A_BUTTON))
+  Chip8.Tick(System);
+  //if(System.pressed(B_BUTTON))
+  //  Chip8.Tick(System);
 
   #if DEBUG_MODE
     Debug.Tick(System);
