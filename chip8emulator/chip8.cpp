@@ -116,7 +116,8 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
           this->Register[byteX] <<= 1;
           return;
       }
-    break;
+      break;
+
     case 0x9:  //SKNE - Skip if byteY reg != byteX reg
       if(this->Register[byteY] != this->Register[byteX])
       {
