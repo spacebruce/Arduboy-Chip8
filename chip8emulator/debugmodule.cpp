@@ -133,8 +133,8 @@ void DebugModule::Draw(Arduboy2 & System)
 
     for(uint8_t i = 0; i < Chip8::StackSize / 2; ++i)
     {
-      const uint8_t High = ((Emulator->Stack[i] >> 8) & 0xFF);
-      const uint8_t Low = ((Emulator->Stack[i] >> 0) & 0xFF);
+      const uint8_t High = Emulator->Stack[i];
+      const uint8_t Low = Emulator->Stack[i + 8];
 
       const int16_t X = (i * 16);
 
