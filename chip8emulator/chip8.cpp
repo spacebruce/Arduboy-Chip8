@@ -19,201 +19,236 @@ void Chip8::ExecuteInstruction(Arduboy2 & System)
       {
         case 0xE0:  //CLS - Clear screen
           System.clear();
-        return;
+          return;
+
         case 0xEE:  //RTS - return from sub
           this->ProgramCounter = this->PullWord();
-        return;
+          return;
+
         case 0xFD:  //EXIT - End program
           this->Halt();
-        return;
+          return;
       }
-  break;
-  case 0x1:  //JUMP to xNNN
-    this->ProgramCounter = Opcode & 0x0FFF;
-  return;
-  case 0x2:  //CALL
-    this->PushWord(this->ProgramCounter);
-    this->ProgramCounter = Opcode & 0x0FFF;
-  return;
-  case 0x3:  //SKE - Skip if selected register = low byte
-    if(this->Register[byteX] == Low)
-    {
-      this->ProgramCounter += 2;
-    }
-  return;
-  case 0x4:  //SKNE - Skip if reg != low byte
-    if(this->Register[byteX] != Low)
-    {
-      this->ProgramCounter += 2;
-    }
-  return;
-  case 0x5:  //??? - Skip if byteY register == selected register
-    if(this->Register[byteY] == this->Register[byteX])
-    {
-      this->ProgramCounter += 2;
-    }
-  return;
-  case 0x6: //LOAD - store constant into register
-    this->Register[byteX] = Low;
-  return;
-  case 0x7:  //ADD - Add value to register
-    this->Register[byteX] += Low;
-  return;
-  case 0x8:  //Numerical operations and stuff
-    switch(Low & 0x0F)
-    {
-      case 0x0: //LOAD
-        this->Register[byteX] = this->Register[byteY];
+      break;
+
+    case 0x1:  //JUMP to xNNN
+      this->ProgramCounter = Opcode & 0x0FFF;
       return;
-      case 0x1: //OR
-        this->Register[byteX] |= this->Register[byteY];
+
+    case 0x2:  //CALL
+      this->PushWord(this->ProgramCounter);
+      this->ProgramCounter = Opcode & 0x0FFF;
       return;
-      case 0x2: //AND
-        this->Register[byteX] &= this->Register[byteY];
-      return;
-      case 0x3: //XOR
-        this->Register[byteX] ^= this->Register[byteY];
-      return;
-      case 0x4: //ADD
+
+    case 0x3:  //SKE - Skip if selected register = low byte
+      if(this->Register[byteX] == Low)
       {
-        uint16_t result = (this->Register[byteX] + this->Register[byteY]);
-        this->Register[0xF] = (result > 0xFF) ? 1 : 0;
-        this->Register[byteX] = (result & 0xFF);
+        this->ProgramCounter += 2;
       }
       return;
-      case 0x5: //SUB - Subtract byteY from byteX, if borrow store 0 in reg 0xF
-        this->Register[0xF] = this->Register[byteX] > this->Register[byteY];
-        this->Register[byteX] -= this->Register[byteY];
-      return;
-      case 0x6: //SHR - Shift bits right. Bit 0 goes into reg 0xF
-        this->Register[0xF] = this->Register[byteX] & 0x1;
-        this->Register[byteX] >>= 1;
-      return;
-      case 0x7: //SUBN  - Subtract byteY from byteX, is borrow store 1 in reg 0xF
-        this->Register[0xF] = this->Register[byteY] > this->Register[byteX];
-        this->Register[byteX] = (this->Register[byteY] - this->Register[byteX]);
-      return;
-      case 0xE: //SHL - Shift bits left. Bit 7 goes into reg 0xF
-        this->Register[0xF] = (this->Register[byteX] >> 7) & 0x1;
-        this->Register[byteX] <<= 1;
-      return;
-    }
-  break;
-  case 0x9:  //SKNE - Skip if byteY reg != byteX reg
-    if(this->Register[byteY] != this->Register[byteX])
-    {
-      this->ProgramCounter += 2;
-    }
-  return;
-  case 0xA:  //LOAD - load index reg with data
-    this->Index = Opcode & 0x0FFF;
-  return;
-  case 0xB:  //JUMP + i - PC goes moved to immediate address + V0
-    this->ProgramCounter = (Opcode & 0x0FFF) + this->Register[0];
-  return;
-  case 0xC:  //RAND - generated random number &'d with low byte, store in selected register
-    this->Register[byteX] = random(255) & Low;
-  return;
-  case 0xD:
-  {
-    /*  DXXX
-      D - sprite draw
-      X - X position register
-      X - Y position register
-      X - Sprite height
-    */
-    uint8_t x = this->Register[byteX];//this->Register[High & 0x0F];
-    uint8_t y = this->Register[byteY];//this->Register[(Low & 0xF0) >> 4];
-    uint8_t height = (Low & 0x0F);
-    this->Register[0xF] = 0;  //Collision register
-    uint8_t screenX, screenY;
-    for(uint8_t drawY = 0; drawY < height; ++drawY)
-    {
-      screenY = (y + drawY) % 32;
-      uint8_t sprite = this->ReadMemory(this->Index + drawY);
-      for(uint8_t drawX = 0; drawX < 8; ++drawX)
+
+    case 0x4:  //SKNE - Skip if reg != low byte
+      if(this->Register[byteX] != Low)
       {
-        if((sprite >> drawX) & 0x1) //If current pixel in sprite is on
+        this->ProgramCounter += 2;
+      }
+      return;
+
+    case 0x5:  //??? - Skip if byteY register == selected register
+      if(this->Register[byteY] == this->Register[byteX])
+      {
+        this->ProgramCounter += 2;
+      }
+      return;
+
+    case 0x6: //LOAD - store constant into register
+      this->Register[byteX] = Low;
+      return;
+
+    case 0x7:  //ADD - Add value to register
+      this->Register[byteX] += Low;
+      return;
+
+    case 0x8:  //Numerical operations and stuff
+      switch(Low & 0x0F)
+      {
+        case 0x0: //LOAD
+          this->Register[byteX] = this->Register[byteY];
+          return;
+
+        case 0x1: //OR
+          this->Register[byteX] |= this->Register[byteY];
+          return;
+
+        case 0x2: //AND
+          this->Register[byteX] &= this->Register[byteY];
+          return;
+
+        case 0x3: //XOR
+          this->Register[byteX] ^= this->Register[byteY];
+          return;
+
+        case 0x4: //ADD
+          {
+            uint16_t result = (this->Register[byteX] + this->Register[byteY]);
+            this->Register[0xF] = (result > 0xFF) ? 1 : 0;
+            this->Register[byteX] = (result & 0xFF);
+          }
+          return;
+
+        case 0x5: //SUB - Subtract byteY from byteX, if borrow store 0 in reg 0xF
+          this->Register[0xF] = this->Register[byteX] > this->Register[byteY];
+          this->Register[byteX] -= this->Register[byteY];
+          return;
+
+        case 0x6: //SHR - Shift bits right. Bit 0 goes into reg 0xF
+          this->Register[0xF] = this->Register[byteX] & 0x1;
+          this->Register[byteX] >>= 1;
+          return;
+
+        case 0x7: //SUBN  - Subtract byteY from byteX, is borrow store 1 in reg 0xF
+          this->Register[0xF] = this->Register[byteY] > this->Register[byteX];
+          this->Register[byteX] = (this->Register[byteY] - this->Register[byteX]);
+          return;
+
+        case 0xE: //SHL - Shift bits left. Bit 7 goes into reg 0xF
+          this->Register[0xF] = (this->Register[byteX] >> 7) & 0x1;
+          this->Register[byteX] <<= 1;
+          return;
+      }
+    break;
+    case 0x9:  //SKNE - Skip if byteY reg != byteX reg
+      if(this->Register[byteY] != this->Register[byteX])
+      {
+        this->ProgramCounter += 2;
+      }
+      return;
+
+    case 0xA:  //LOAD - load index reg with data
+      this->Index = Opcode & 0x0FFF;
+      return;
+
+    case 0xB:  //JUMP + i - PC goes moved to immediate address + V0
+      this->ProgramCounter = (Opcode & 0x0FFF) + this->Register[0];
+      return;
+
+    case 0xC:  //RAND - generated random number &'d with low byte, store in selected register
+      this->Register[byteX] = random(255) & Low;
+      return;
+
+    case 0xD:
+      {
+        /*  DXXX
+          D - sprite draw
+          X - X position register
+          X - Y position register
+          X - Sprite height
+        */
+        uint8_t x = this->Register[byteX];//this->Register[High & 0x0F];
+        uint8_t y = this->Register[byteY];//this->Register[(Low & 0xF0) >> 4];
+        uint8_t height = (Low & 0x0F);
+        this->Register[0xF] = 0;  //Collision register
+        uint8_t screenX, screenY;
+        for(uint8_t drawY = 0; drawY < height; ++drawY)
         {
-          screenX = (x + (7 - drawX)) % 64;
-          bool enabled = System.getPixel(screenX, screenY);
-          if (enabled) //If surface pixel is on
-            this->Register[0xF] = 1; //Collision on
-          System.drawPixel(screenX, screenY, !enabled);  //invert drawn pixel
+          screenY = (y + drawY) % 32;
+          uint8_t sprite = this->ReadMemory(this->Index + drawY);
+          for(uint8_t drawX = 0; drawX < 8; ++drawX)
+          {
+            if((sprite >> drawX) & 0x1) //If current pixel in sprite is on
+            {
+              screenX = (x + (7 - drawX)) % 64;
+              bool enabled = System.getPixel(screenX, screenY);
+              if (enabled) //If surface pixel is on
+                this->Register[0xF] = 1; //Collision on
+              System.drawPixel(screenX, screenY, !enabled);  //invert drawn pixel
+            }
+          }
         }
       }
-    }
-  }
-  return;
-  case 0xE:  //Input stuff
-    switch(Low)
-    {
-      case 0x9E:
       return;
-      case 0xA1:
-      return;
-    }
-  break;
-  case 0xF: // IO stuff
-    switch(Low)
-    {
-      case 0x07: //Load delay - timer -> register
-        this->Register[byteX] = this->DelayTimer;
-      return;
-      case 0x0A:  //KEYD - Pause until key pressed
-        //to do
-        this->Register[byteX] = 0;
-      return;
-      case 0x15:  //Store delay - register -> timer
-        this->DelayTimer = this->Register[byteX];
-      return;
-      case 0x18:  //Store sound - register -> timer
-      {
-        this->SoundTimer = this->Register[byteX];
 
-        if(this->SoundTimer > 0)
-          BeepPin1::tone(BeepPin1::freq(Chip8::SoundFrequency));
-        else
-          BeepPin1::noTone();
+    case 0xE:  //Input stuff
+      switch(Low)
+      {
+        case 0x9E:
+          return;
+
+        case 0xA1:
+          return;
       }
-      return;
-      case 0x1E:  //Add I
-        this->Index += this->Register[byteX];
-      return;
-      case 0x29:  //Load sprite index
-        this->Index = this->Register[byteX] * 5;
-      return;
-      case 0x33:  //BCD
+      break;
+
+    case 0xF: // IO stuff
+      switch(Low)
+      {
+        case 0x07: //Load delay - timer -> register
+          this->Register[byteX] = this->DelayTimer;
+          return;
+
+        case 0x0A:  //KEYD - Pause until key pressed
+          //to do
+          this->Register[byteX] = 0;
+          return;
+
+        case 0x15:  //Store delay - register -> timer
+          this->DelayTimer = this->Register[byteX];
+          return;
+
+        case 0x18:  //Store sound - register -> timer
+          {
+            this->SoundTimer = this->Register[byteX];
+
+            if(this->SoundTimer > 0)
+              BeepPin1::tone(BeepPin1::freq(Chip8::SoundFrequency));
+            else
+              BeepPin1::noTone();
+          }
+          return;
+
+        case 0x1E:  //Add I
+          this->Index += this->Register[byteX];
+          return;
+
+        case 0x29:  //Load sprite index
+          this->Index = this->Register[byteX] * 5;
+          return;
+
+        case 0x33:  //BCD
           this->WriteMemory(this->Index + 0, (this->Register[byteX]) / 100);
           this->WriteMemory(this->Index + 1, (this->Register[byteX] % 100) / 10);
           this->WriteMemory(this->Index + 2, (this->Register[byteX]) % 10);
-      return;
-      case 0x55:  //STORE I - Store n registers into memory[index]
-        for(uint8_t i = 0; i <= byteX; ++i)
-        {
-          this->WriteMemory(this->Index + i, this->Register[i]);
-        }
-      return;
-      case 0x65:  //LOAD I - Load n number of registers from memory[index]
-        for(uint8_t i = 0; i <= byteX; ++i)
-        {
-          this->Register[i] = this->ReadMemory(this->Index + i);
-        }
-      return;
-      case 0x75:  //SRPL - Move N registers to temp
-        for(uint8_t i = 0; i <= byteX; ++i)
-        {
-          this->RegisterTemp[i] = this->Register[i];
-        }
-      return;
-      case 0x85:  //LRPL - Move N temp registers to main
-        for(uint8_t i = 0; i <= byteX; ++i)
-        {
-          this->Register[i] = this->RegisterTemp[i];
-        }
-      return;
-    }
-    break;
+          return;
+
+        case 0x55:  //STORE I - Store n registers into memory[index]
+          for(uint8_t i = 0; i <= byteX; ++i)
+          {
+            this->WriteMemory(this->Index + i, this->Register[i]);
+          }
+          return;
+
+        case 0x65:  //LOAD I - Load n number of registers from memory[index]
+          for(uint8_t i = 0; i <= byteX; ++i)
+          {
+            this->Register[i] = this->ReadMemory(this->Index + i);
+          }
+          return;
+
+        case 0x75:  //SRPL - Move N registers to temp
+          for(uint8_t i = 0; i <= byteX; ++i)
+          {
+            this->RegisterTemp[i] = this->Register[i];
+          }
+          return;
+
+        case 0x85:  //LRPL - Move N temp registers to main
+          for(uint8_t i = 0; i <= byteX; ++i)
+          {
+            this->Register[i] = this->RegisterTemp[i];
+          }
+          return;
+      }
+      break;
   }
 
   this->Error(CPUError::UnknownOpcode, Opcode);
