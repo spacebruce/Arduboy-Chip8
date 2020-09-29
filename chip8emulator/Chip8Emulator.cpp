@@ -456,7 +456,7 @@ void Chip8Emulator::UpdateSoundTimer()
     BeepPin1::noTone();
 }
 
-void Chip8Emulator::UpdateInput()
+void Chip8Emulator::ClearInput()
 {
   //clear key state
   this->InputPressed = false;

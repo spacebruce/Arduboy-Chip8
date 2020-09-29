@@ -96,7 +96,7 @@ public:
   void Tick(Arduboy2 & System, uint8_t Repeat);
   void UpdateDelayTimer();
   void UpdateSoundTimer();
-  void UpdateInput();
+  void ClearInput();
   void Halt(void);
   void SendInput(const uint8_t KeyID);
 
