@@ -50,5 +50,13 @@ void Chip8Input::Tick(Arduboy2& System)
         Emulator->SendInput(0x8);
     }
     break;
+    case Chip8InputMode::Tetris:
+      if(System.pressed(A_BUTTON))
+        Emulator->SendInput(0x4);
+      if(System.pressed(LEFT_BUTTON))
+        Emulator->SendInput(0x5);
+      if(System.pressed(RIGHT_BUTTON))
+        Emulator->SendInput(0x6);
+    break;
   }
 }
