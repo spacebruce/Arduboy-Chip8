@@ -185,7 +185,7 @@ void Chip8Emulator::ExecuteInstruction(Arduboy2 & System)
             this->ProgramCounter += 2;
           return;
         case 0xA1:  //If X pressed == false
-          if (this->InputBuffer[this->Register[operandX]] == false)
+          if (!this->InputBuffer[this->Register[operandX]])
             this->ProgramCounter += 2;
           return;
       }
@@ -416,7 +416,7 @@ void Chip8Emulator::Tick(Arduboy2 & System)
   {
     if(this->InputPressed)  //If key pressed this frame
     {
-      this->Register[this->InputRegister] == this->InputLast;
+      this->Register[this->InputRegister] = this->InputLast;
       this->Mode = CPUMode::Running;
     }
   }
@@ -456,7 +456,7 @@ void Chip8Emulator::UpdateSoundTimer()
     BeepPin1::noTone();
 }
 
-void Chip8Emulator::UpdateInput()
+void Chip8Emulator::ClearInput()
 {
   //clear key state
   this->InputPressed = false;

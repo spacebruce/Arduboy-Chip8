@@ -66,7 +66,7 @@ public:
   uint8_t InputRegister = 0x0;  //For wait for input instruction
   uint8_t InputPressed = false; //Has user pressed key recently?
   uint8_t InputLast = 0x00;     //Last pressed key id
-  uint8_t InputBuffer[16];      //State of all keys
+  bool InputBuffer[16];      //State of all keys
 //Debug
   CPUMode Mode = CPUMode::Startup;
   CPUError ErrorType = CPUError::None;
@@ -96,7 +96,7 @@ public:
   void Tick(Arduboy2 & System, uint8_t Repeat);
   void UpdateDelayTimer();
   void UpdateSoundTimer();
-  void UpdateInput();
+  void ClearInput();
   void Halt(void);
   void SendInput(const uint8_t KeyID);
 

@@ -34,7 +34,7 @@ void loop()
 
   Chip8.UpdateDelayTimer();
   Chip8.UpdateSoundTimer();
-  Chip8.UpdateInput();
+  Chip8.ClearInput();
 
   #if DEBUG_MODE
     Debug.Tick(System);
