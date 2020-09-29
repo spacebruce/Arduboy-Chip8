@@ -185,7 +185,7 @@ void Chip8Emulator::ExecuteInstruction(Arduboy2 & System)
             this->ProgramCounter += 2;
           return;
         case 0xA1:  //If X pressed == false
-          if ((this->InputPressed) && (this->InputBuffer[this->Register[operandX]]))
+          if (this->InputBuffer[this->Register[operandX]] == false)
             this->ProgramCounter += 2;
           return;
       }
