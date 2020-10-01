@@ -1,10 +1,10 @@
 #include <Arduboy2.h>
 #include <arduino.h>
-#include "testrom.h"
-#include "Chip8Emulator.h"
-#include "Chip8Input.h"
-#include "debugmodule.h"
-#include "config.h"
+#include "src/testrom.h"
+#include "src/Chip8Emulator.h"
+#include "src/Chip8Input.h"
+#include "src/debugmodule.h"
+#include "src/config.h"
 
 Arduboy2 System;
 
