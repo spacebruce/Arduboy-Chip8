@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Size.h"
+
 const PROGMEM uint8_t FontData[] =
 {
   0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -41,4 +43,5 @@ const PROGMEM uint8_t FontData[] =
   0x60, 0x90, 0x20, 0x00, 0x20, // ?
   0x20, 0x20, 0x20, 0x00, 0x20, // !
 };
-const size_t FontDataSize = 16 * 5;
+
+const size_t FontDataSize = getSize(FontData);
