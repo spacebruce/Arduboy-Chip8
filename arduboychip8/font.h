@@ -1,10 +1,18 @@
 #pragma once
 
+// For size_t
+#include <stddef.h>
+
+// For uint8_t
+#include <stdint.h>
+
+// For PROGMEM
 #include <avr/pgmspace.h>
 
+// For getSize
 #include "Size.h"
 
-constexpr const uint8_t FontData[] PROGMEM
+constexpr uint8_t FontData[] PROGMEM
 {
   0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
   0x20, 0x60, 0x20, 0x20, 0x70, // 1
