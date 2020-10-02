@@ -5,17 +5,23 @@
 #include "States.h"
 #include "GameState.h"
 #include "Chip8Emulator.h"
+#include "InputMode.h"
+#include "System.h"
 
 class Game
 {
 private:
-	Arduboy2 arduboy;
 	Chip8Emulator emulator;
 
 	GameState gameState;
+	InputMode inputMode = InputMode::Chord;
 
 	MenuState menuState;
 	EmulatorState emulatorState;
+
+	ButtonSystem buttonSystem;
+	FrameRateLimiter frameRateLimiter;
+	Screen64x32 screen;
 
 public:
 	GameState getGameState() const
@@ -28,19 +34,29 @@ public:
 		this->gameState = gameState;
 	}
 
+	InputMode getInputMode() const
+	{
+		return this->inputMode;
+	}
+
+	void setInputMode(InputMode inputMode)
+	{
+		this->inputMode = inputMode;
+	}
+
 	Chip8Emulator & getEmulator()
 	{
 		return this->emulator;
 	}
 
-	Arduboy2 & getButtonSystem()
+	ButtonSystem & getButtonSystem()
 	{
-		return this->arduboy;
+		return this->buttonSystem;
 	}
 
-	Arduboy2 & getScreen()
+	Screen64x32 & getScreen()
 	{
-		return this->arduboy;
+		return this->screen;
 	}
 
 public:

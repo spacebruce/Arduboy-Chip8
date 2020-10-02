@@ -4,9 +4,13 @@
 
 void Game::setup()
 {
-  this->arduboy.begin();
-  this->arduboy.clear();
-  this->arduboy.setFrameRate(60);
+  Arduboy2Core::boot();
+  Arduboy2Base::flashlight();
+  Arduboy2Base::systemButtons();
+  Arduboy2Audio::begin();
+
+  this->screen.clear();
+  this->frameRateLimiter.setFrameRate(60);
 
   BeepPin1::begin();
 
@@ -15,10 +19,10 @@ void Game::setup()
 
 void Game::loop()
 {
-  if (!this->arduboy.nextFrame())
+  if (!this->frameRateLimiter.shouldRunNextFrame())
     return;
 
-  this->arduboy.pollButtons();
+  this->buttonSystem.updateButtons();
 
   switch(this->gameState)
   {
@@ -33,5 +37,5 @@ void Game::loop()
       break;
   }
 
-  this->arduboy.display();
+  this->screen.display();
 }

@@ -1,6 +1,6 @@
 #include "Chip8Emulator.h"
 
-void Chip8Emulator::ExecuteInstruction(Arduboy2 & System)
+void Chip8Emulator::ExecuteInstruction(Screen64x32 & screen)
 {
   const uint8_t highByte = this->ReadMemory(this->ProgramCounter + 0);
   const uint8_t lowByte = this->ReadMemory(this->ProgramCounter + 1);
@@ -19,7 +19,7 @@ void Chip8Emulator::ExecuteInstruction(Arduboy2 & System)
       switch(lowByte)
       {
         case 0xE0:  //CLS - Clear screen
-          System.clear();
+          screen.clear();
           return;
 
         case 0xEE:  //RTS - return from sub
@@ -164,12 +164,12 @@ void Chip8Emulator::ExecuteInstruction(Arduboy2 & System)
               continue;
 
             const int8_t drawX = (x + (7 - xIndex)) % 64;
-            const uint8_t pixel = System.getPixel(drawX, drawY);
+            const uint8_t pixel = screen.getPixel(drawX, drawY);
 
             if (pixel != 0) //If surface pixel is on
               collision = 1; //Collision on
 
-            System.drawPixel(drawX, drawY, ~pixel);  //invert drawn pixel
+            screen.setPixel(drawX, drawY, ~pixel);  //invert drawn pixel
           }
         }
 
@@ -410,7 +410,7 @@ void Chip8Emulator::Load(const uint8_t * Rom, const size_t RomSize)
   this->Reset();
 }
 
-void Chip8Emulator::Tick(Arduboy2 & System)
+void Chip8Emulator::Tick(Screen64x32 & screen)
 {
   if(this->Mode == CPUMode::InputWait)
   {
@@ -423,14 +423,14 @@ void Chip8Emulator::Tick(Arduboy2 & System)
   if(this->Mode != CPUMode::Running)
     return;
 
-  ExecuteInstruction(System);
+  ExecuteInstruction(screen);
 }
 
-void Chip8Emulator::Tick(Arduboy2 & System, uint8_t Repeat)
+void Chip8Emulator::Tick(Screen64x32 & screen, uint8_t Repeat)
 {
   for(auto i = 0; i < Repeat; ++i)
   {
-    this->Tick(System);
+    this->Tick(screen);
   }
 }
 
