@@ -5,6 +5,7 @@
 #include "States.h"
 #include "GameState.h"
 #include "Chip8Emulator.h"
+#include "InputMode.h"
 #include "System.h"
 
 class Game
@@ -13,6 +14,7 @@ private:
 	Chip8Emulator emulator;
 
 	GameState gameState;
+	InputMode inputMode = InputMode::Chord;
 
 	MenuState menuState;
 	EmulatorState emulatorState;
@@ -30,6 +32,16 @@ public:
 	void setGameState(GameState gameState)
 	{
 		this->gameState = gameState;
+	}
+
+	InputMode getInputMode() const
+	{
+		return this->inputMode;
+	}
+
+	void setInputMode(InputMode inputMode)
+	{
+		this->inputMode = inputMode;
 	}
 
 	Chip8Emulator & getEmulator()
