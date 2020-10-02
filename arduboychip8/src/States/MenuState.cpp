@@ -15,4 +15,8 @@ void MenuState::update(Game & game)
 void MenuState::render(Game & game)
 {
 	static_cast<void>(game);
+
+	auto & printer = game.getPrinter();
+	printer.setPosition(0,0);
+	printer.print("Woah!");
 }
