@@ -4,9 +4,63 @@
 class Printer : public Print
 {
 private:
+  uint8_t* buffer;
+  uint8_t bufferWidth, bufferHeight;
+  uint8_t x = 0, y = 0;
+  const uint8_t CharacterWidth = 4;
+  const uint8_t CharacterHeight = 5;
 public:
-  size_t write(uint8_t Char)
+  void setBuffer(uint8_t* buffer, uint8_t width, uint8_t height) //Possibly better way of doing this. Rethink.
   {
+    this->buffer = buffer;
+    this->bufferWidth = width;
+    this->bufferHeight = height;
+  }
+  size_t write(uint8_t letter)
+  {
+    //Find offset in font table
+    uint8_t offset = 0x24;  //default to ?
+    if(letter >= 0x30 || letter <= 0x39)  //Numbers
+      offset = (letter - 0x30) + 0x0;
+    else if (letter >= 0x41 || letter <= 0x5A) //Capitals
+      offset = (letter - 0x41) + 0xA;
+    else if (letter >= 0x64 || letter <= 0x7A) //Lowercase
+      offset = (letter - 0x64) + 0xA;
+    else if(letter == 0x21)  // !
+      offset = 0x25;
+    else if(letter == 0x3F)  // ?
+      offset = 0x24;
 
+    offset *= 5;  //5 bytes per char
+
+    //Draw char to buffer
+    for(uint8_t drawX = this->x; drawX < (this->x + this->CharacterWidth); ++drawX)
+    {
+      for(uint8_t drawY = this->y; drawY < (this->y + this->CharacterHeight); ++drawY)
+      {
+        const uint8_t colour = 1;
+
+        const uint8_t columnHeight = 8;
+        const size_t row = (drawY / columnHeight);
+        const size_t bitIndex = (drawY % columnHeight);
+        const size_t bufferIndex = ((row * bufferWidth) +drawX);
+        const size_t bit = (1 << bitIndex);
+
+        if(colour != 0)
+          this->buffer[bufferIndex] |= bit;
+        else
+          this->buffer[bufferIndex] &= ~bit;
+      }
+    }
+
+    //Advance char position
+    this->x += this->CharacterWidth;
+    if ((this->x + this->CharacterWidth) > this->bufferWidth)
+    {
+      this->x = 0;  //have a configurable x start position?
+      this->y += this->CharacterHeight;
+    }
+
+    return 1; //what does this signal?
   }
 };
