@@ -18,5 +18,11 @@ void MenuState::render(Game & game)
 
 	auto & printer = game.getPrinter();
 	printer.setPosition(0,0);
-	printer.print("Woah!");
+	printer.print("0123456789!?");
+	printer.setPosition(0,8);
+	printer.print("ABCDEFGHIJK");
+	printer.setPosition(0,16);
+	printer.print("LMNOPQRSTUV");
+	printer.setPosition(0,24);
+	printer.print("WXYZ");
 }
