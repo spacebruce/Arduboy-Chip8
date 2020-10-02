@@ -60,8 +60,8 @@ public:
       case 0x41 ... 0x5A: //Uppercase
         offset = (letter - 0x41) + 0xA;
       break;
-      case 0x64 ... 0x7A: //Lowercase
-        offset = (letter - 0x64) + 0xA;
+      case 0x61 ... 0x7A: //Lowercase
+        offset = (letter - 0x61) + 0xA;
       break;
       case 0x21:  // !
         offset = 0x25;
