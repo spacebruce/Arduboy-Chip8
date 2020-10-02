@@ -18,7 +18,7 @@ void Game::loop()
   if (!this->arduboy.nextFrame())
     return;
 
-  this->arduboy.pollButtons();
+  this->buttonSystem.updateButtons();
 
   switch(this->gameState)
   {
