@@ -10,11 +10,21 @@ private:
   const uint8_t CharacterWidth = 4;
   const uint8_t CharacterHeight = 5;
 public:
+  Printer() = default;
+  Printer(uint8_t* buffer, uint8_t width, uint8_t height)
+  {
+    this->setBuffer(buffer, width, height);
+  }
   void setBuffer(uint8_t* buffer, uint8_t width, uint8_t height) //Possibly better way of doing this. Rethink.
   {
     this->buffer = buffer;
     this->bufferWidth = width;
     this->bufferHeight = height;
+  }
+  void setPosition(uint8_t x, uint8_t y)
+  {
+    this->x = x;
+    this->y = y;
   }
   size_t write(uint8_t letter)
   {

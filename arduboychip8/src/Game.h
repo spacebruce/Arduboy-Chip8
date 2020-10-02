@@ -22,7 +22,7 @@ private:
 	ButtonSystem buttonSystem;
 	FrameRateLimiter frameRateLimiter;
 	Screen64x32 screen;
-	Printer printer;
+	Printer printer = Printer(screen.buffer, Screen64x32::bufferWidth, Screen64x32::bufferHeight);
 
 public:
 	GameState getGameState() const
