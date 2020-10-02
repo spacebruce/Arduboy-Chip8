@@ -20,6 +20,7 @@ private:
 
 	ButtonSystem buttonSystem;
 	FrameRateLimiter frameRateLimiter;
+	Screen64x32 screen;
 
 public:
 	GameState getGameState() const
@@ -42,9 +43,9 @@ public:
 		return this->buttonSystem;
 	}
 
-	Arduboy2 & getScreen()
+	Screen64x32 & getScreen()
 	{
-		return this->arduboy;
+		return this->screen;
 	}
 
 public:

@@ -5,7 +5,7 @@
 void Game::setup()
 {
   this->arduboy.begin();
-  this->arduboy.clear();
+  this->screen.clear();
   this->frameRateLimiter.setFrameRate(60);
 
   BeepPin1::begin();

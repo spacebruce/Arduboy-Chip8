@@ -1,4 +1,5 @@
 #pragma once
+
 #include <stdint.h>
 #include <stddef.h>
 #include <arduino.h>
@@ -6,6 +7,7 @@
 #include <avr/pgmspace.h>
 #include "config.h"
 #include "font.h"
+#include "System.h"
 
 enum class CPUMode : uint8_t
 {
@@ -73,7 +75,7 @@ public:
   uint16_t ErrorData = 0;
 //things
   MemoryPartition GetMemoryPartition(const size_t Location) const;
-  void ExecuteInstruction(Arduboy2 & System);
+  void ExecuteInstruction(Screen64x32 & screen);
   uint8_t ReadMemory(const size_t Location);
   void WriteMemory(const size_t Location, const uint8_t Value);
   void PushWord(const uint16_t Word);
@@ -92,8 +94,8 @@ public:
 
   void Load(const uint8_t * Rom, const size_t RomSize);
   void Reset(void);
-  void Tick(Arduboy2 & System);
-  void Tick(Arduboy2 & System, uint8_t Repeat);
+  void Tick(Screen64x32 & screen);
+  void Tick(Screen64x32 & screen, uint8_t Repeat);
   void UpdateDelayTimer();
   void UpdateSoundTimer();
   void ClearInput();
