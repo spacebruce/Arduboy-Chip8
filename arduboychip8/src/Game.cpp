@@ -6,7 +6,7 @@ void Game::setup()
 {
   this->arduboy.begin();
   this->arduboy.clear();
-  this->arduboy.setFrameRate(60);
+  this->frameRateLimiter.setFrameRate(60);
 
   BeepPin1::begin();
 
@@ -15,7 +15,7 @@ void Game::setup()
 
 void Game::loop()
 {
-  if (!this->arduboy.nextFrame())
+  if (!this->frameRateLimiter.shouldRunNextFrame())
     return;
 
   this->buttonSystem.updateButtons();

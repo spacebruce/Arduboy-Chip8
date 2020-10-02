@@ -19,6 +19,7 @@ private:
 	EmulatorState emulatorState;
 
 	ButtonSystem buttonSystem;
+	FrameRateLimiter frameRateLimiter;
 
 public:
 	GameState getGameState() const
