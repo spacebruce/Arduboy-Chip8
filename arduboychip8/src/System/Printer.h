@@ -7,12 +7,13 @@ private:
   uint8_t* buffer;
   uint8_t bufferWidth, bufferHeight;
   uint8_t x = 0, y = 0;
+  uint8_t xStart = 0;
   const uint8_t CharacterWidth = 4;
   const uint8_t CharacterHeight = 5;
 
   void newLine()
   {
-    this->x = 0;
+    this->x = this->xStart;
     this->y += this->CharacterHeight + 1;
   };
   void nextLetter()
@@ -86,7 +87,7 @@ public:
       uint8_t charY = 0;
       for(uint8_t drawY = this->y; drawY < (this->y + this->CharacterHeight); ++drawY)
       {
-        const uint8_t colour = (charBuffer[charY] >> (charX)) & 0x1;
+        const uint8_t colour = (charBuffer[charY] >> charX) & 0x1;
 
         const uint8_t columnHeight = 8;
         const size_t row = (drawY / columnHeight);
