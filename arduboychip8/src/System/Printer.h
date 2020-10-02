@@ -30,11 +30,11 @@ public:
   {
     //Find offset in font table
     uint8_t offset = 0x24;  //default to ?
-    if(letter >= 0x30 || letter <= 0x39)  //Numbers
+    if(letter >= 0x30 && letter <= 0x39)  //Numbers
       offset = (letter - 0x30) + 0x0;
-    else if (letter >= 0x41 || letter <= 0x5A) //Capitals
+    else if (letter >= 0x41 && letter <= 0x5A) //Capitals
       offset = (letter - 0x41) + 0xA;
-    else if (letter >= 0x64 || letter <= 0x7A) //Lowercase
+    else if (letter >= 0x64 && letter <= 0x7A) //Lowercase
       offset = (letter - 0x64) + 0xA;
     else if(letter == 0x21)  // !
       offset = 0x25;
