@@ -60,6 +60,11 @@ public:
 		return this->screen;
 	}
 
+	Printer & getPrinter()
+	{
+		return this->printer;
+	}
+
 public:
 	void setup();
 	void loop();
