@@ -47,7 +47,7 @@ public:
     uint8_t charBuffer[CharacterHeight];
     for(uint8_t i = 0; i < CharacterHeight; ++i)
     {
-      charBuffer[i] = pgm_read_byte(FontData[offset + i]);
+      charBuffer[i] = static_cast<uint8_t>(pgm_read_byte(&(FontData[offset + i])));
     }
 
     //Draw char to buffer
@@ -57,7 +57,7 @@ public:
       uint8_t charY = 0;
       for(uint8_t drawY = this->y; drawY < (this->y + this->CharacterHeight); ++drawY)
       {
-        const uint8_t colour = (charBuffer[charY] >> charX) & 0x1;
+        const uint8_t colour = (charBuffer[charY] >> (charX + 4)) & 0x1;
 
         const uint8_t columnHeight = 8;
         const size_t row = (drawY / columnHeight);
