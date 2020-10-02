@@ -5,6 +5,7 @@
 #include "States.h"
 #include "GameState.h"
 #include "Chip8Emulator.h"
+#include "System.h"
 
 class Game
 {
@@ -16,6 +17,8 @@ private:
 
 	MenuState menuState;
 	EmulatorState emulatorState;
+
+	ButtonSystem buttonSystem;
 
 public:
 	GameState getGameState() const
@@ -33,9 +36,9 @@ public:
 		return this->emulator;
 	}
 
-	Arduboy2 & getButtonSystem()
+	ButtonSystem & getButtonSystem()
 	{
-		return this->arduboy;
+		return this->buttonSystem;
 	}
 
 	Arduboy2 & getScreen()
