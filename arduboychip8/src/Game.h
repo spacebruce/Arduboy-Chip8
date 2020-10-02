@@ -10,7 +10,6 @@
 class Game
 {
 private:
-	Arduboy2 arduboy;
 	Chip8Emulator emulator;
 
 	GameState gameState;

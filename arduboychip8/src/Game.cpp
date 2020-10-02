@@ -4,7 +4,11 @@
 
 void Game::setup()
 {
-  this->arduboy.begin();
+  Arduboy2Core::boot();
+  Arduboy2Base::flashlight();
+  Arduboy2Base::systemButtons();
+  Arduboy2Audio::begin();
+
   this->screen.clear();
   this->frameRateLimiter.setFrameRate(60);
 
@@ -33,5 +37,5 @@ void Game::loop()
       break;
   }
 
-  this->arduboy.display();
+  this->screen.display();
 }
