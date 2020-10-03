@@ -70,25 +70,19 @@ public:
     }
     offset *= characterHeight;  //5 bytes per char (5 * 36 = 180, safely in 8bit range)
 
-    //Cache and preshift glyph
-    uint8_t charBuffer[characterHeight];
-    for(uint8_t i = 0; i < characterHeight; ++i)
-    {
-      charBuffer[i] = static_cast<uint8_t>(pgm_read_byte(&(FontData[offset + i])) >> 4) & 0x0F;
-    }
-
     //Draw char to buffer
-    uint8_t charX = characterWidth - 1; //draw byte backwards. Why is it backwards?
-    for(uint8_t drawX = this->x; drawX < (this->x + this->characterWidth); ++drawX)
+    uint8_t charY = 0;
+    for(uint8_t drawY = this->y; drawY < (this->y + this->characterHeight); ++drawY)
     {
-      uint8_t charY = 0;
-      for(uint8_t drawY = this->y; drawY < (this->y + this->characterHeight); ++drawY)
+      const uint8_t glyph = static_cast<uint8_t>(pgm_read_byte(&(FontData[offset + charY])) >> 4) & 0x0F;
+      uint8_t charX = characterWidth - 1; //draw byte backwards. Why is it backwards?
+      for(uint8_t drawX = this->x; drawX < (this->x + this->characterWidth); ++drawX)
       {
-        const uint8_t colour = (charBuffer[charY] >> charX) & 0x1;
+        const uint8_t colour = (glyph >> charX) & 0x1;
         this->buffer->setPixel(drawX,drawY, colour);
-        ++charY;
+        --charX;
       }
-      --charX;
+      ++charY;
     }
 
     //Advance char position
