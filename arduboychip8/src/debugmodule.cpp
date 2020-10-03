@@ -12,14 +12,15 @@ void DebugModule::Tick(Arduboy2 & System)
 
   if(System.justPressed(LEFT_BUTTON))
   {
-    this->ViewMode = static_cast<DebugScreenView>((static_cast<uint8_t>(this->ViewMode) - 1) % static_cast<uint8_t>(DebugScreenView::Sizeof));
-    if(this->ViewMode == DebugScreenView::End)
-      this->ViewMode = static_cast<DebugScreenView>(static_cast<uint8_t>(DebugScreenView::Sizeof) - 1);
+
+    this->ViewMode = (this->ViewMode == firstDebugScreenView) ? lastDebugScreenView :
+      static_cast<DebugScreenView>((static_cast<uint8_t>(this->ViewMode) - 1));
   }
 
   if(System.justPressed(RIGHT_BUTTON))
   {
-    this->ViewMode = static_cast<DebugScreenView>((static_cast<uint8_t>(this->ViewMode) + 1) % static_cast<uint8_t>(DebugScreenView::Sizeof));
+    this->ViewMode = (this->ViewMode == lastDebugScreenView) ? firstDebugScreenView :
+      static_cast<DebugScreenView>((static_cast<uint8_t>(this->ViewMode) + 1));
   }
 
   switch(this->ViewMode)

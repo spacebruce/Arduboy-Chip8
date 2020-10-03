@@ -13,8 +13,10 @@ enum class DebugScreenView : uint8_t
   Stack,
   Input,
   Sizeof,
-  End = 255,
 };
+
+constexpr DebugScreenView firstDebugScreenView = DebugScreenView::Memory8;
+constexpr DebugScreenView lastDebugScreenView = DebugScreenView::Sizeof;
 
 class DebugModule
 {
