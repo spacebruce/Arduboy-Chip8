@@ -155,13 +155,7 @@ public:
 private:
 	uint8_t getPixelSafe(uint8_t x, uint8_t y)
 	{
-		if(x < 0)
-			return 0;
-			
 		if(x > (width - 1))
-			return 0;
-			
-		if(y < 0)
 			return 0;
 			
 		if(y > (height - 1))
@@ -184,13 +178,13 @@ private:
 		if(x < 0)
 			return;
 			
-		if(x > (width - 1))
+		if(x > static_cast<int16_t>(width - 1))
 			return;
 			
 		if(y < 0)
 			return;
 			
-		if(y > (height - 1))
+		if(y > static_cast<int16_t>(width - 1))
 			return;
 
 		setPixelUnsafe(x, y, colour);
