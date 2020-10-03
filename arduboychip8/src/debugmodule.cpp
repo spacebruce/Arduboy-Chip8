@@ -12,14 +12,15 @@ void DebugModule::Tick(Arduboy2 & System)
 
   if(System.justPressed(LEFT_BUTTON))
   {
-    this->ViewMode = static_cast<DebugScreenView>((static_cast<uint8_t>(this->ViewMode) - 1) % static_cast<uint8_t>(DebugScreenView::Sizeof));
-    if(this->ViewMode == DebugScreenView::End)
-      this->ViewMode = static_cast<DebugScreenView>(static_cast<uint8_t>(DebugScreenView::Sizeof) - 1);
+
+    this->ViewMode = (this->ViewMode == firstDebugScreenView) ? lastDebugScreenView :
+      static_cast<DebugScreenView>((static_cast<uint8_t>(this->ViewMode) - 1));
   }
 
   if(System.justPressed(RIGHT_BUTTON))
   {
-    this->ViewMode = static_cast<DebugScreenView>((static_cast<uint8_t>(this->ViewMode) + 1) % static_cast<uint8_t>(DebugScreenView::Sizeof));
+    this->ViewMode = (this->ViewMode == lastDebugScreenView) ? firstDebugScreenView :
+      static_cast<DebugScreenView>((static_cast<uint8_t>(this->ViewMode) + 1));
   }
 
   switch(this->ViewMode)
@@ -58,6 +59,11 @@ void DebugModule::Tick(Arduboy2 & System)
         }
       }
       break;
+
+    case DebugScreenView::Processor:
+    case DebugScreenView::Stack:
+    case DebugScreenView::Sizeof:
+      break;
   }
 }
 
@@ -87,26 +93,33 @@ void DebugModule::Draw(Arduboy2 & System)
     case DebugScreenView::Input:
       this->DrawInputView(System);
       break;
+
+    case DebugScreenView::Sizeof:
+      break;
   }
 
   //Status message
   System.setCursor(0,56);
   switch(Emulator->Mode)
   {
-    case CPUMode::Error:
-      this->DrawError(System);
+    case CPUMode::Startup:
+      System.print(F("CPU STARTUP"));
+      break;
+
+    case CPUMode::Running:
+      System.print(F("Running"));
+      break;
+
+    case CPUMode::InputWait:
+      System.print(F("WAITING FOR INPUT"));
       break;
 
     case CPUMode::Stopped:
       System.print(F("CPU HALT"));
       break;
 
-    case CPUMode::Startup:
-      System.print(F("CPU STARTUP"));
-      break;
-
-    case CPUMode::InputWait:
-      System.print(F("WAITING FOR INPUT"));
+    case CPUMode::Error:
+      this->DrawError(System);
       break;
   }
 }
@@ -251,6 +264,10 @@ void DebugModule::DrawError(Arduboy2 & System)
 
     switch(Emulator->ErrorType)
     {
+      case CPUError::None:
+        System.print(F("None"));
+        break;
+
       case CPUError::ExternalWrite:
         System.print(F("EXTWR : "));
         System.print(Emulator->ErrorData);
