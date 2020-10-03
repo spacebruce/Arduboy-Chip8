@@ -44,6 +44,9 @@ public:
     uint8_t offset;
     switch(letter)
     {
+      case '\0':  //perish.
+        return 0;
+      break;
       case '\n':
         this->newLine();
         return 1;
@@ -68,7 +71,7 @@ public:
         offset = 0x24;
       break;
       default:  // unknown char, whatever
-        return 0;
+        return 1;
       break;
     }
     offset *= characterHeight;  //5 bytes per char (5 * 36 = 180, safely in 8bit range)
