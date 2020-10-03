@@ -18,7 +18,6 @@ void EmulatorState::update(Game & game)
 
 void EmulatorState::render(Game & game)
 {
-	static_cast<void>(game);
 	game.getScreen().fillBufferFromMemory(game.getEmulatorScreen().buffer);
 }
 
