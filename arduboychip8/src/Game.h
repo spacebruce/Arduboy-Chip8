@@ -23,7 +23,7 @@ private:
 	FrameRateLimiter frameRateLimiter;
 	Screen64x32 screen;
 	Screen64x32 emulatorScreen;
-	Printer printer = Printer(screen.buffer, Screen64x32::bufferWidth, Screen64x32::bufferHeight);
+	Printer printer = Printer(screen);
 
 public:
 	GameState getGameState() const

@@ -26,6 +26,18 @@ private:
   }
 public:
   Printer() = default;
+  Printer(const Screen64x32& screen)
+  {
+    this->buffer = screen.buffer;
+    this->bufferWidth = 64;
+    this->bufferHeight = 32;
+  }
+  Printer(const Screen32x16& screen)
+  {
+    this->buffer = screen.buffer;
+    this->bufferWidth = 32;
+    this->bufferHeight = 16;
+  }
   Printer(uint8_t* buffer, uint8_t width, uint8_t height)
   {
     this->setBuffer(buffer, width, height);
