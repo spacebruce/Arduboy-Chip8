@@ -41,7 +41,7 @@ public:
   size_t write(uint8_t letter)
   {
     //Handle character
-    uint8_t offset = 0x24;  //default to ?
+    uint8_t offset;
     switch(letter)
     {
       case '\n':
@@ -64,8 +64,11 @@ public:
       case '!':  // !
         offset = 0x25;
       break;
-      default:  // ?
+      case '?':  // !
         offset = 0x24;
+      break;
+      default:  // unknown char, whatever
+        return 0;
       break;
     }
     offset *= characterHeight;  //5 bytes per char (5 * 36 = 180, safely in 8bit range)
