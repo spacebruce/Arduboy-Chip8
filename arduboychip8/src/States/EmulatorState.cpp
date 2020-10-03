@@ -13,13 +13,13 @@ void EmulatorState::update(Game & game)
 
 	this->updateInput(game);
 
-	emulator.Tick(screen, 50);
+	emulator.Tick(game.getEmulatorScreen(), 50);
 }
 
 void EmulatorState::render(Game & game)
 {
 	static_cast<void>(game);
-	game.getScreen().fillBufferFromMemory(screen.buffer);
+	game.getScreen().fillBufferFromMemory(game.getEmulatorScreen().buffer);
 }
 
 void EmulatorState::updateInput(Game & game)

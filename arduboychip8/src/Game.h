@@ -22,6 +22,7 @@ private:
 	ButtonSystem buttonSystem;
 	FrameRateLimiter frameRateLimiter;
 	Screen64x32 screen;
+	Screen64x32 emulatorScreen;
 	Printer printer = Printer(screen.buffer, Screen64x32::bufferWidth, Screen64x32::bufferHeight);
 
 public:
@@ -58,6 +59,10 @@ public:
 	Screen64x32 & getScreen()
 	{
 		return this->screen;
+	}
+	Screen64x32 & getEmulatorScreen()
+	{
+		return this->emulatorScreen;
 	}
 
 	Printer & getPrinter()
