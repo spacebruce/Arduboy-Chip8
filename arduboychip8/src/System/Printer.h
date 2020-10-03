@@ -55,16 +55,16 @@ public:
         this->nextLetter();
         return 1;
       break;
-      case 0x30 ... 0x39: //Numbers
-        offset = (letter - 0x30) + 0x0;
+      case '0' ... '9': //Numbers
+        offset = (letter - '0') + 0x0;
       break;
-      case 0x41 ... 0x5A: //Uppercase
-        offset = (letter - 0x41) + 0xA;
+      case 'A' ... 'Z': //Uppercase
+        offset = (letter - 'A') + 0xA;
       break;
-      case 0x61 ... 0x7A: //Lowercase
-        offset = (letter - 0x61) + 0xA;
+      case 'a' ... 'z': //Lowercase
+        offset = (letter - 'a') + 0xA;
       break;
-      case 0x21:  // !
+      case '!':  // !
         offset = 0x25;
       break;
       default:  // ?
