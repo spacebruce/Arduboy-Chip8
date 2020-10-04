@@ -3,7 +3,10 @@
 #include "System/ButtonSystem.h"
 #include "MenuHandler.h"
 
-
+enum class MainMenuMode : uint8_t
+{
+	GameList, Settings, Load, 
+};
 
 class MainMenu
 {
@@ -14,12 +17,17 @@ private:
   static constexpr uint8_t scrollMargin = 2;
   int8_t scroll = 0;   //first drawn line
 //Contents
+	MainMenuMode mode = MainMenuMode::GameList;
   MenuHandler menu;
 public:
-  MainMenu() = default;
+	bool loadGame()
+	{
+		return (this->mode == MainMenuMode::Load);
+	}
 
   void update(ButtonSystem& buttons)
   {
+	//Selection
     const uint8_t menuSize = menu.getSize();
     uint8_t selected = menu.getSelected();
     if(buttons.justPressed(UP_BUTTON))
@@ -27,7 +35,13 @@ public:
     if(buttons.justPressed(DOWN_BUTTON))
       selected = (selected < (menuSize - 1)) ? selected + 1 : menuSize - 1;
     menu.setSelected(selected);
-
+	
+	//Do thing
+	if(buttons.justPressed(A_BUTTON))
+	{
+		this->mode = MainMenuMode::Load;
+	}
+	
     //scroll menu
     if(selected <= scrollMargin)
       scroll = 0;
