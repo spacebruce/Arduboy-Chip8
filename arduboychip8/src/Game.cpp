@@ -23,7 +23,8 @@ void Game::loop()
     return;
 
   this->buttonSystem.updateButtons();
-
+  this->screen.clear();
+  
   switch(this->gameState)
   {
     case GameState::Menu:

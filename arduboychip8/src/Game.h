@@ -22,6 +22,8 @@ private:
 	ButtonSystem buttonSystem;
 	FrameRateLimiter frameRateLimiter;
 	Screen64x32 screen;
+	Screen64x32 emulatorScreen;
+	Printer printer = Printer(screen);
 
 public:
 	GameState getGameState() const
@@ -57,6 +59,15 @@ public:
 	Screen64x32 & getScreen()
 	{
 		return this->screen;
+	}
+	Screen64x32 & getEmulatorScreen()
+	{
+		return this->emulatorScreen;
+	}
+
+	Printer & getPrinter()
+	{
+		return this->printer;
 	}
 
 public:
