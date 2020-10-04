@@ -25,7 +25,7 @@ public:
     menu.setSelected(selected);
     //animate scroll
   }
-  void render(Printer& printer)
+  void render(Screen64x32& screen, Printer& printer)
   {
     printer.setPosition(8, this->yStart);
     printer.setXStart(8);
