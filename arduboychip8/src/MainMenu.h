@@ -54,7 +54,7 @@ public:
   {
     const uint8_t selected = menu.getSelected();
     const uint8_t first = scroll;
-    const uint8_t last = max(first + lines, menu.getSize());
+    const uint8_t last = min(first + lines, menu.getSize());
 
     //selection box. Kinda hacky, but this is the look I wanna go for
     const uint8_t selectedOffset = (this->yStart + (selected - first) * 6) - 1;
