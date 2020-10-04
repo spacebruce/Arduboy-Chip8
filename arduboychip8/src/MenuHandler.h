@@ -10,7 +10,7 @@ class MenuHandler
 {
 private:
   uint8_t selected = 0;
-  uint8_t size = 4; //temp
+  uint8_t size = 8; //temp
 public:
   void setSelected(const uint8_t selected)
   {

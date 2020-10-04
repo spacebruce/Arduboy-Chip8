@@ -15,7 +15,7 @@ void MenuState::update(Game & game)
 void MenuState::render(Game & game)
 {
 	auto & printer = game.getPrinter();
+	menu.render(game.getScreen(), printer);
 	printer.clear();
 	printer.print(F("Chip8 thingy"));
-	menu.render(printer);
 }
