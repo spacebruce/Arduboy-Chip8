@@ -7,9 +7,9 @@
 void MenuState::update(Game & game)
 {
 	auto & buttonSystem = game.getButtonSystem();
-
-	if(buttonSystem.isPressed(A_BUTTON))
-		game.setGameState(GameState::Emulator);
+	menu.update(buttonSystem);
+	//	if(buttonSystem.isPressed(A_BUTTON))
+	//		game.setGameState(GameState::Emulator);
 }
 
 void MenuState::render(Game & game)
