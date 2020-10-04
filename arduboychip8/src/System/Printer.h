@@ -30,6 +30,15 @@ public:
   {
     this->buffer = &screen;
   }
+  void setXStart(const uint8_t x)
+  {
+    this->xStart = x;
+  }
+  void clear()
+  {
+    this->setPosition(0,0);
+    this->setXStart(0);
+  }
   void setBuffer(const Screen64x32& screen)
   {
     this->buffer = &screen;
