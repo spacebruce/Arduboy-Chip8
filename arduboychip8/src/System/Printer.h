@@ -1,5 +1,6 @@
 #pragma once
 #include "../font.h"
+#include "Screen64x32.h"
 
 class Printer : public Print
 {
