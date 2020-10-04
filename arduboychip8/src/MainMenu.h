@@ -3,13 +3,16 @@
 #include "System/ButtonSystem.h"
 #include "MenuHandler.h"
 
+
+
 class MainMenu
 {
 private:
 //layout
   static constexpr uint8_t yStart = 8;
   static constexpr uint8_t lines = 4;
-  int16_t Scroll = 0;
+  static constexpr uint8_t scrollMargin = 2;
+  int8_t scroll = 0;   //first drawn line
 //Contents
   MenuHandler menu;
 public:
@@ -17,24 +20,44 @@ public:
 
   void update(ButtonSystem& buttons)
   {
+    const uint8_t menuSize = menu.getSize();
     uint8_t selected = menu.getSelected();
     if(buttons.justPressed(UP_BUTTON))
       selected = (selected > 0) ? selected - 1 : 0;
     if(buttons.justPressed(DOWN_BUTTON))
-      selected = (selected < (menu.getSize() - 1)) ? selected + 1 : (menu.getSize() - 1);
+      selected = (selected < (menuSize - 1)) ? selected + 1 : menuSize - 1;
     menu.setSelected(selected);
-    //animate scroll
+
+    //scroll menu
+    if(selected <= scrollMargin)
+      scroll = 0;
+    else if(selected > (menuSize - scrollMargin))
+      scroll = menuSize - lines;
+    else
+      scroll = selected - scrollMargin;
   }
   void render(Screen64x32& screen, Printer& printer)
   {
-    printer.setPosition(8, this->yStart);
-    printer.setXStart(8);
-    for(uint8_t i = 0; i < this->lines; ++i)
+    const uint8_t selected = menu.getSelected();
+    const uint8_t first = scroll;
+    const uint8_t last = max(first + lines, menu.getSize());
+
+    //selection box. Kinda hacky, but this is the look I wanna go for
+    const uint8_t selectedOffset = (this->yStart + (selected - first) * 6) - 1;
+    for(uint8_t y = selectedOffset; y < selectedOffset + 7; ++y)
     {
-      printer.println(F("NAME8CHR"));
+      for(uint8_t i = 0; i < 64; ++i)
+        screen.setPixel(i, y, 1);
     }
-    //placeholder
-    printer.setPosition(0, this->yStart + (menu.getSelected() * 6));
-    printer.print(F("O"));
+
+    printer.setPosition(1, this->yStart);
+    printer.setXStart(1);
+    for(uint8_t i = first; i < last; ++i)
+    {
+      printer.setInverted((i == selected));
+      printer.print(F("NAMECHR"));
+      printer.println(i);
+    }
+    printer.setInverted(false);
   }
 };
