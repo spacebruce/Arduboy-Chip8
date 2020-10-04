@@ -11,18 +11,20 @@ class Menu
 {
 private:
 //layout
-  uint8_t y = 8;
-  uint8_t lines = 4;
+  static constexpr uint8_t yStart = 8;
+  static constexpr lines = 4;
 //Contents
+
 public:
   Menu() = default;
 
   void render(Printer& printer)
   {
-    printer.setPosition(0, y);
+    printer.setPosition(8, yStart);
+    printer.setStartX(8);
     for(uint8_t i = 0; i < lines; ++i)
     {
-      printer.println(F("name entry!"));
+      printer.println(F("NAME8CHR"));
     }
   }
 };
