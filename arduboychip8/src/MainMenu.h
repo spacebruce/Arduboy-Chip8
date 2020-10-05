@@ -59,13 +59,9 @@ private:
 		const uint8_t first = scroll;
 		const uint8_t last = min(first + lines, menuGamelist.getSize());
 
-		//selection box. Kinda hacky, but this is the look I wanna go for
+		// Draw the selection box
 		const uint8_t selectedOffset = (this->yStart + (selected - first) * 6) - 1;
-		for(uint8_t y = selectedOffset; y < selectedOffset + 7; ++y)
-		{
-			for(uint8_t i = 0; i < 64; ++i)
-				screen.setPixel(i, y, 1);
-		}
+		screen.fillRectangle(0, selectedOffset, screen.width, 7, ~0);
 
 		printer.setPosition(1, this->yStart);
 		printer.setXStart(1);
