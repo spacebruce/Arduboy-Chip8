@@ -2,6 +2,7 @@
 #include "System/Printer.h"
 #include "System/ButtonSystem.h"
 #include "MenuHandler.h"
+#include "GameList.h"
 
 enum class MainMenuMode : uint8_t
 {
