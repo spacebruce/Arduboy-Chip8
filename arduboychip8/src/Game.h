@@ -31,6 +31,11 @@ public:
 		return this->gameState;
 	}
 
+	void emulatorStart(const uint8_t* Rom, const size_t Length)
+	{
+		this->emulator.Load(Rom, Length);
+	}
+
 	void setGameState(GameState gameState)
 	{
 		this->gameState = gameState;

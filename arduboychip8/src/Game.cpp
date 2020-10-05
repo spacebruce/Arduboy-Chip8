@@ -1,6 +1,6 @@
 #include "Game.h"
 
-#include "testrom.h"
+#include "GameList.h"
 
 void Game::setup()
 {
@@ -13,8 +13,6 @@ void Game::setup()
   this->frameRateLimiter.setFrameRate(60);
 
   BeepPin1::begin();
-
-  this->emulator.Load(TestRom);
 }
 
 void Game::loop()
