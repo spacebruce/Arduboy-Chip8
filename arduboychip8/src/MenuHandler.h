@@ -1,11 +1,5 @@
 #pragma once
 
-class MenuEntry
-{
-private:
-public:
-};
-
 class MenuHandler
 {
 private:
@@ -19,7 +13,7 @@ public:
   }
   void setSelected(const uint8_t selected)
   {
-    this->selected = selected;
+    this->selected = (selected < (this->size - 1)) ? selected : (this->size - 1);
   }
   uint8_t getSelected() const
   {
@@ -32,7 +26,7 @@ public:
 
   void selectNext()
   {
-    if(this->selected < this->size)
+    if(this->selected < (this->size - 1))
       ++this->selected;
   }
   void selectPrevious()
