@@ -5,8 +5,11 @@
 
 enum class MainMenuMode : uint8_t
 {
-	GameList, Settings, Credits, Load, 
+	GameList, Settings, Credits, Load,
 };
+
+constexpr MainMenuMode firstMenuPage = MainMenuMode::GameList;
+constexpr MainMenuMode lastMenuPage = MainMenuMode::Credits;
 
 class MainMenu
 {
@@ -19,7 +22,7 @@ private:
 //Contents
 	MainMenuMode mode = MainMenuMode::GameList;
   MenuHandler menu;
-  
+
   void drawGameList(Screen64x32& screen, Printer& printer)
   {
 	const uint8_t selected = menu.getSelected();
@@ -44,10 +47,42 @@ private:
     }
     printer.setInverted(false);
   }
+  void tickGameList(ButtonSystem& buttons)
+  {
+    const uint8_t menuSize = menu.getSize();
+    uint8_t selected = menu.getSelected();
+    if(buttons.justPressed(UP_BUTTON))
+      selected = (selected > 0) ? selected - 1 : 0;
+    if(buttons.justPressed(DOWN_BUTTON))
+      selected = (selected < (menuSize - 1)) ? selected + 1 : menuSize - 1;
+    menu.setSelected(selected);
+
+    //Load selected game thing
+    if(buttons.justPressed(A_BUTTON))
+    {
+      this->mode = MainMenuMode::Load;
+    }
+
+    //scroll menu
+    if(selected <= scrollMargin)
+      scroll = 0;
+    else if(selected > (menuSize - scrollMargin))
+      scroll = menuSize - lines;
+    else
+      scroll = selected - scrollMargin;
+  }
+  void tickSettings(ButtonSystem& buttons)
+  {
+
+  }
   void drawCredits(Screen64x32& screen, Printer& printer)
   {
 	  printer.setPosition(0,8);
 	  printer.print(F("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!?"));
+  }
+  void drawSettings(Screen64x32& screen, Printer& printer)
+  {
+
   }
 public:
 	bool loadGame()
@@ -57,33 +92,27 @@ public:
 
   void update(ButtonSystem& buttons)
   {
-	//Selection
-    const uint8_t menuSize = menu.getSize();
-    uint8_t selected = menu.getSelected();
-    if(buttons.justPressed(UP_BUTTON))
-      selected = (selected > 0) ? selected - 1 : 0;
-    if(buttons.justPressed(DOWN_BUTTON))
-      selected = (selected < (menuSize - 1)) ? selected + 1 : menuSize - 1;
-    menu.setSelected(selected);
-	
-	if(buttons.justPressed(LEFT_BUTTON))
-		this->mode = MainMenuMode::Credits;
-	if(buttons.justPressed(RIGHT_BUTTON))
-		this->mode = MainMenuMode::GameList;
-	
-	//Do thing
-	if(buttons.justPressed(A_BUTTON))
-	{
-		this->mode = MainMenuMode::Load;
-	}
-	
-    //scroll menu
-    if(selected <= scrollMargin)
-      scroll = 0;
-    else if(selected > (menuSize - scrollMargin))
-      scroll = menuSize - lines;
-    else
-      scroll = selected - scrollMargin;
+    switch(this->mode)
+    {
+      case MainMenuMode::GameList:
+        tickGameList(buttons);
+      break;
+      case MainMenuMode::Settings:
+        tickSettings(buttons);
+      break;
+    }
+
+    if(buttons.justPressed(LEFT_BUTTON))
+    {
+      this->mode = (this->mode == firstMenuPage) ? lastMenuPage :
+        static_cast<MainMenuMode>((static_cast<uint8_t>(this->mode) - 1));
+    }
+
+    if(buttons.justPressed(RIGHT_BUTTON))
+    {
+      this->mode = (this->mode == lastMenuPage) ? firstMenuPage :
+        static_cast<MainMenuMode>((static_cast<uint8_t>(this->mode) + 1));
+    }
   }
   void render(Screen64x32& screen, Printer& printer)
   {
@@ -92,6 +121,9 @@ public:
 		case MainMenuMode::GameList:
 			this->drawGameList(screen, printer);
 		break;
+    case MainMenuMode::Settings:
+
+    break;
 		case MainMenuMode::Credits:
 			this->drawCredits(screen, printer);
 		break;
