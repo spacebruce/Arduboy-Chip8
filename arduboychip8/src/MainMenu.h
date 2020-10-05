@@ -96,6 +96,11 @@ private:
 
   }
 public:
+	size_t gameSelected() const
+	{
+		return this->menuGamelist.getSelected();
+	}
+
 	bool loadGame()
 	{
 		return (this->mode == MainMenuMode::Load);
