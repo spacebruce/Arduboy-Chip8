@@ -70,26 +70,27 @@ public:
         this->nextLetter();
         return 1;
       break;
-      case '0' ... '9': //Numbers
+      case '0' ... '9': // Numbers
         offset = (letter - '0') + 0x0;
       break;
-      case 'A' ... 'Z': //Uppercase
+      case 'A' ... 'Z': // Uppercase
         offset = (letter - 'A') + 0xA;
       break;
-      case 'a' ... 'z': //Lowercase
+      case 'a' ... 'z': // Lowercase
         offset = (letter - 'a') + 0xA;
       break;
-      case '!':  // !
-        offset = 0x25;
-      break;
-      case '?':  // !
+      case '?':  // Symbol '?'
         offset = 0x24;
       break;
+      case '!':  // Symbol '!'
+        offset = 0x25;
+      break;
+
       default:  // unknown char, whatever
         return 1;
       break;
     }
-    offset *= characterHeight;  //5 bytes per char (5 * 36 = 180, safely in 8bit range)
+    offset *= characterHeight;  //5 bytes per char (5 * 37 = 185, safely in 8bit range)
 
     //Draw char to buffer
     uint8_t charY = 0;
