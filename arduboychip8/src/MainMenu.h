@@ -2,6 +2,7 @@
 #include "System/Printer.h"
 #include "System/ButtonSystem.h"
 #include "MenuHandler.h"
+#include "Size.h"
 #include "GameList.h"
 
 enum class MainMenuMode : uint8_t
@@ -22,7 +23,7 @@ private:
   uint8_t scroll = 0;   //first drawn line
 //Contents
 	MainMenuMode mode = MainMenuMode::GameList;
-  MenuHandler menuGamelist;
+  MenuHandler menuGamelist = MenuHandler(getSize(GameList));
 
   void scrollMenu(MenuHandler& menu)
   {
