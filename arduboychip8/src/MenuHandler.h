@@ -13,7 +13,7 @@ public:
   }
   void setSelected(const uint8_t selected)
   {
-    this->selected = selected;
+    this->selected = (selected < (this->size - 1)) ? selected : (this->size - 1);
   }
   uint8_t getSelected() const
   {
