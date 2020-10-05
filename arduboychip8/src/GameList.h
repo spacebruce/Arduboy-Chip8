@@ -28,11 +28,11 @@
 
 struct GameEntry
 {
-  char Name[8];
+  const char* Name;
   uint8_t* Data;
 };
 
-static PROGMEM const GameEntry GameList[] =
+constexpr GameEntry GameList[] PROGMEM =
 {
     { FifteenPuzzleName, FifteenPuzzleData },
     { BlinkyName, BlinkyData },

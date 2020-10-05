@@ -1,4 +1,5 @@
 #pragma once
+#include "System/FlashStringHelper.h"
 #include "System/Printer.h"
 #include "System/ButtonSystem.h"
 #include "MenuHandler.h"
@@ -71,10 +72,11 @@ private:
 
     printer.setPosition(1, this->yStart);
     printer.setXStart(1);
+
     for(uint8_t i = first; i < last; ++i)
     {
       printer.setInverted((i == selected));
-      printer.print(F("NAMECHR"));
+      printer.print(AsFlashStringHelper(pgm_read_ptr(&GameList[i].Name)));
       printer.println(i);
     }
     printer.setInverted(false);
