@@ -18,7 +18,7 @@ private:
   static constexpr uint8_t yStart = 8;
   static constexpr uint8_t lines = 4;
   static constexpr uint8_t scrollMargin = 2;
-  int8_t scroll = 0;   //first drawn line
+  uint8_t scroll = 0;   //first drawn line
 //Contents
 	MainMenuMode mode = MainMenuMode::GameList;
   MenuHandler menuGamelist;
