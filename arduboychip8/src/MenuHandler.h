@@ -1,11 +1,5 @@
 #pragma once
 
-class MenuEntry
-{
-private:
-public:
-};
-
 class MenuHandler
 {
 private:
