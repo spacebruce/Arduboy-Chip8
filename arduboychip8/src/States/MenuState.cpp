@@ -10,6 +10,8 @@ void MenuState::update(Game & game)
 	menu.update(buttonSystem);
 	if(menu.loadGame())
 	{
+		const uint8_t Selected = menu.gameSelected();
+		game.emulatorStart(pgm_read_ptr(&GameList[Selected].Data), pgm_read_ptr(&GameList[Selected].Size));
 		game.setGameState(GameState::Emulator);
 	}
 }
