@@ -26,7 +26,7 @@ public:
 
   void selectNext()
   {
-    if(this->selected < this->size)
+    if(this->selected < (this->size - 1))
       ++this->selected;
   }
   void selectPrevious()
