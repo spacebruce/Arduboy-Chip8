@@ -231,7 +231,7 @@ constexpr uint8_t FontData[] PROGMEM
   0x90,  // ▓░░▓░░░░
   0x90,  // ▓░░▓░░░░
   0x90,  // ▓░░▓░░░░
-  0x60,  // ░▓▓░░░░░
+  0x70,  // ░▓▓▓░░░░
 
   // 0x1F - #086 Letter 'V' (U+0056 Latin Capital Letter V)
   0x90,  // ▓░░▓░░░░
