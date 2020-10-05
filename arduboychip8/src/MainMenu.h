@@ -72,11 +72,15 @@ private:
 
 		for(uint8_t i = first; i < last; ++i)
 		{
-			printer.setInverted((i == selected));
+			if(i == selected)
+				printer.setInverted(true);
+
 			printer.print(AsFlashStringHelper(pgm_read_ptr(&GameList[i].Name)));
 			printer.println(i);
+
+			if(i == selected)
+				printer.setInverted(false);
 		}
-		printer.setInverted(false);
 	}
 
 	void drawCredits(Screen64x32& screen, Printer& printer)
