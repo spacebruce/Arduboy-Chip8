@@ -1,4 +1,6 @@
 #pragma once
+#include "Size.h"
+
 #include "Games/15PUZZLE.h"
 #include "Games/BLINKY.h"
 #include "Games/BLITZ.h"
@@ -29,34 +31,35 @@
 struct GameEntry
 {
   const char* Name;
-  uint8_t* Data;
+  const uint8_t* Data;
+  const size_t Size;
 };
 
 constexpr GameEntry GameList[] PROGMEM =
 {
-  { FifteenPuzzleName, FifteenPuzzleData },
-  { BlinkyName, BlinkyData },
-  { BlitzName, BlitzData },
-  { BrixName, BrixData },
-  { Connect4Name, Connect4Data },
-  { GuessName, GuessData },
-  { HiddenName, HiddenData },
-  { IBMName, IBMData },
-  { InvadersName, InvadersData },
-  { KaleidName, KaleidData },
-  { MazeName, MazeData },
-  { MerlinName, MerlinData },
-  { MissileName, MissileData },
-  { PongName, PongData },
-  { Pong2Name, Pong2Data },
-  { PuzzleName, PuzzleData },
-  { SyzygyName, SyzygyData },
-  { TankName, TankData },
-  { TestOPCodeName, TestOPCodeData },
-  { TetrisName, TetrisData },
-  { TictacName, TictacData },
-  { UFOName, UFOData },
-  { VBrixName, VBrixData },
-  { VersName, VersData },
-  { WipeoffName, WipeoffData },
+  { FifteenPuzzleName, FifteenPuzzleData, getSize(FifteenPuzzleData) },
+  { BlinkyName, BlinkyData, getSize(BlinkyData) },
+  { BlitzName, BlitzData, getSize(BlitzData) },
+  { BrixName, BrixData, getSize(BrixData) },
+  { Connect4Name, Connect4Data, getSize(Connect4Data) },
+  { GuessName, GuessData, getSize(GuessData) },
+  { HiddenName, HiddenData, getSize(HiddenData) },
+  { IBMName, IBMData, getSize(IBMData) },
+  { InvadersName, InvadersData, getSize(InvadersData) },
+  { KaleidName, KaleidData, getSize(KaleidData) },
+  { MazeName, MazeData, getSize(MazeData) },
+  { MerlinName, MerlinData, getSize(MerlinData) },
+  { MissileName, MissileData, getSize(MissileData) },
+  { PongName, PongData, getSize(PongData) },
+  { Pong2Name, Pong2Data, getSize(Pong2Data) },
+  { PuzzleName, PuzzleData, getSize(PuzzleData) },
+  { SyzygyName, SyzygyData, getSize(SyzygyData) },
+  { TankName, TankData, getSize(TankData) },
+  { TestOPCodeName, TestOPCodeData, getSize(TestOPCodeData) },
+  { TetrisName, TetrisData, getSize(TetrisData) },
+  { TictacName, TictacData, getSize(TictacData) },
+  { UFOName, UFOData, getSize(UFOData) },
+  { VBrixName, VBrixData, getSize(VBrixData) },
+  { VersName, VersData, getSize(VersData) },
+  { WipeoffName, WipeoffData, getSize(WipeoffData) },
 };
