@@ -10,7 +10,7 @@
 #include <avr/pgmspace.h>
 
 // For getSize
-#include "Size.h"
+#include "System/Size.h"
 
 constexpr uint8_t FontData[] PROGMEM
 {

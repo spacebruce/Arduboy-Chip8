@@ -1,5 +1,5 @@
 #pragma once
-#include "Size.h"
+#include "System/Size.h"
 
 #include "Games/15PUZZLE.h"
 #include "Games/BLINKY.h"
