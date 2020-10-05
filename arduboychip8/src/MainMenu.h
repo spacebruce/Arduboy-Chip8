@@ -40,13 +40,10 @@ private:
 
   void tickGameList(ButtonSystem& buttons)
   {
-    const uint8_t menuSize = menuGamelist.getSize();
-    uint8_t selected = menuGamelist.getSelected();
     if(buttons.justPressed(UP_BUTTON))
-      selected = (selected > 0) ? selected - 1 : 0;
+			menuGamelist.selectPrevious();
     if(buttons.justPressed(DOWN_BUTTON))
-      selected = (selected < (menuSize - 1)) ? selected + 1 : menuSize - 1;
-    menuGamelist.setSelected(selected);
+			menuGamelist.selectNext();
 
     //Load selected game thing
     if(buttons.justPressed(A_BUTTON))

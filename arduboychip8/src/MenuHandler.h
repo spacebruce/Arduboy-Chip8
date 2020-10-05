@@ -29,4 +29,15 @@ public:
   {
     return this->size;
   }
+
+  void selectNext()
+  {
+    if(this->selected < this->size)
+      ++this->selected;
+  }
+  void selectPrevious()
+  {
+    if(this->selected > 0)
+      --this->selected;
+  }
 };
