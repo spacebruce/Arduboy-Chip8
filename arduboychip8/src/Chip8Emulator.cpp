@@ -169,7 +169,7 @@ void Chip8Emulator::ExecuteInstruction(Screen64x32 & screen)
             if (pixel != 0) //If surface pixel is on
               collision = 1; //Collision on
 
-            screen.setPixel(drawX, drawY, ~pixel);  //invert drawn pixel
+            screen.setPixel(drawX, drawY, !pixel);  //invert drawn pixel
           }
         }
 

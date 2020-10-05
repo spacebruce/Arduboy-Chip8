@@ -7,20 +7,17 @@
 void MenuState::update(Game & game)
 {
 	auto & buttonSystem = game.getButtonSystem();
-
-	if(buttonSystem.isPressed(A_BUTTON))
+	menu.update(buttonSystem);
+	if(menu.loadGame())
+	{
 		game.setGameState(GameState::Emulator);
+	}
 }
 
 void MenuState::render(Game & game)
 {
 	auto & printer = game.getPrinter();
-	printer.setPosition(0,0);
-	printer.print("0123456789!?");
-	printer.setPosition(0,8);
-	printer.print("ABCDEFGHIJK");
-	printer.setPosition(0,16);
-	printer.print("LMNOPQRSTUV");
-	printer.setPosition(0,24);
-	printer.print("WXYZ");
+	printer.clear();
+	printer.print(F("Chip8 thingy"));
+	menu.render(game.getScreen(), printer);
 }

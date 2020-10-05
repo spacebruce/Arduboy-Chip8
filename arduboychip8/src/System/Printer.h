@@ -1,5 +1,6 @@
 #pragma once
 #include "../font.h"
+#include "Screen64x32.h"
 
 class Printer : public Print
 {
@@ -7,6 +8,7 @@ private:
   Screen64x32* buffer;
   uint8_t x = 0, y = 0;
   uint8_t xStart = 0;
+  bool inverted = false;
   static constexpr uint8_t characterWidth = 4;
   static constexpr uint8_t characterHeight = 5;
 
@@ -28,6 +30,19 @@ public:
   Printer(const Screen64x32& screen)
   {
     this->buffer = &screen;
+  }
+  void setXStart(const uint8_t x)
+  {
+    this->xStart = x;
+  }
+  void setInverted(const bool inverted)
+  {
+    this->inverted = inverted;
+  }
+  void clear()
+  {
+    this->setPosition(0,0);
+    this->setXStart(0);
   }
   void setBuffer(const Screen64x32& screen)
   {
@@ -80,7 +95,9 @@ public:
     uint8_t charY = 0;
     for(uint8_t drawY = this->y; drawY < (this->y + this->characterHeight); ++drawY)
     {
-      const uint8_t glyph = static_cast<uint8_t>(pgm_read_byte(&(FontData[offset + charY])) >> 4) & 0x0F;
+      uint8_t glyph = static_cast<uint8_t>(pgm_read_byte(&(FontData[offset + charY])) >> 4) & 0x0F;
+      if(inverted)
+        glyph = ~glyph;
       uint8_t charX = characterWidth - 1; //draw byte backwards. Why is it backwards?
       for(uint8_t drawX = this->x; drawX < (this->x + this->characterWidth); ++drawX)
       {

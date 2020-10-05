@@ -24,6 +24,7 @@ void Game::loop()
 
   this->buttonSystem.updateButtons();
   this->screen.clear();
+  this->printer.clear();
   
   switch(this->gameState)
   {
