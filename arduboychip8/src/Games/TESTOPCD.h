@@ -1,6 +1,6 @@
 #pragma once
 
-const PROGMEM char TestOPcodeName[] = "testopcd";
+const PROGMEM char TestOPCodeName[] = "testopcd";
 const PROGMEM uint8_t TestOPCodeData[] =
 {
 	0x12, 0x4E, 0xEA, 0xAC, 0xAA, 0xEA, 0xCE, 0xAA, 0xAA, 0xAE, 0xE0, 0xA0,
