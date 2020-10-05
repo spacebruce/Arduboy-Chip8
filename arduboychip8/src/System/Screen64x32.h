@@ -66,6 +66,12 @@ public:
 			this->buffer[index] = pgm_read_byte(&image[index]);
 	}
 
+	void fillRectangle(int16_t x, int16_t y, uint8_t width, uint8_t height, uint8_t colour)
+	{
+		// For now, default to the safe behaviour
+		this->fillRectangleSafe(x, y, width, height, colour);
+	}
+
 	void display()
 	{
 		for(size_t y = 0; y < bufferHeight; ++y)
@@ -170,5 +176,41 @@ private:
 			this->buffer[bufferIndex] |= bit;
 		else
 			this->buffer[bufferIndex] &= ~bit;
+	}
+
+	void fillRectangleSafe(int16_t x, int16_t y, uint8_t width, uint8_t height, uint8_t colour)
+	{
+		if((width == 0) || (height == 0))
+			return;
+
+		if((x >= this->width) || (y >= this->height))
+			return;
+
+		const int16_t yEnd = (y + height);
+		const int16_t xEnd = (x + width);
+
+		if((xEnd < 0) || (yEnd < 0))
+			return;
+
+		const uint8_t xStart = (x < 0) ? 0 : x;
+		const uint8_t yStart = (y < 0) ? 0 : y;
+
+		this->fillRectangleUnsafe(xStart, yStart, width, height, colour);
+	}
+
+	// This should probably be replaced with a more efficient implementation later
+	void fillRectangleUnsafe(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t colour)
+	{
+		for(uint8_t yIndex = 0; yIndex < height; ++yIndex)
+		{
+			const size_t drawY = (y + yIndex);
+
+			for(uint8_t xIndex = 0; xIndex < width; ++xIndex)
+			{
+				const size_t drawX = (x + xIndex);
+
+				this->setPixelUnsafe(drawX, drawY, colour);
+			}
+		}
 	}
 };
